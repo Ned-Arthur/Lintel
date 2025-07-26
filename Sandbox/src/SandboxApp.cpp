@@ -7,6 +7,17 @@
 
 #define FOREGROUND_WHITE FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED
 
+CHAR_INFO makeChar_Win(char c, WORD attribs)
+{
+	CHAR_INFO chi;
+	chi.Char.UnicodeChar = c;
+	chi.Attributes = attribs;
+
+	return chi;
+}
+
+
+
 class Sandbox : public Lintel::Application
 {
 public:
@@ -18,6 +29,7 @@ public:
 	void Setup() override
 	{
 		Lintel::TRen::getConsoleSize(&w, &h);
+		ren.setTitle("Sandbox Game");
 	}
 
 	void Update() override
@@ -25,18 +37,14 @@ public:
 		//Lintel::TRen::getConsoleSize(&w, &h);
 		//ren.resize(w, h);
 		//*
-		CHAR_INFO flushChar;
-		flushChar.Char.UnicodeChar = '.';
-		flushChar.Attributes = FOREGROUND_WHITE | BACKGROUND_BLUE;
+		Lintel::TChar flushChar('a', WHITE, RED);
 		ren.flushBuffer(flushChar);
-		CHAR_INFO cross;
-		cross.Char.UnicodeChar = 'X';
-		cross.Attributes = BACKGROUND_BLUE;
+		Lintel::TChar cross('X', BLACK, CYAN);
 		ren.drawChar(cross, x, y);
 		x++; x %= w;
 		y++; y %= h;
 		ren.redraw();
-		Sleep(500);
+		Sleep(50);
 		//*/
 	}
 };

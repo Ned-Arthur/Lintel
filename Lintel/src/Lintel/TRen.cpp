@@ -2,15 +2,71 @@
 
 #include <cstdio>
 
+// Platform specific implementations are better suited to the source I think;
+// None of this is needed by users
+
+#define ToWchar(from, to) MultiByteToWideChar(CP_ACP, 0, &from, 1, &to, 1)
+
+// Translation tables
+#ifdef LN_PLATFORM_WINDOWS
+constexpr int TCTransFG_Win[16] = {
+	0,
+	FOREGROUND_RED,
+	FOREGROUND_GREEN,
+	FOREGROUND_BLUE,
+	FOREGROUND_RED | FOREGROUND_GREEN,
+	FOREGROUND_RED | FOREGROUND_BLUE,
+	FOREGROUND_GREEN | FOREGROUND_BLUE,
+	FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE,
+
+	FOREGROUND_INTENSITY,
+	FOREGROUND_INTENSITY | FOREGROUND_RED,
+	FOREGROUND_INTENSITY | FOREGROUND_GREEN,
+	FOREGROUND_INTENSITY | FOREGROUND_BLUE,
+	FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN,
+	FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_BLUE,
+	FOREGROUND_INTENSITY | FOREGROUND_GREEN | FOREGROUND_BLUE,
+	FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE,
+};
+constexpr int TCTransBG_Win[16] = {
+	0,
+	BACKGROUND_RED,
+	BACKGROUND_GREEN,
+	BACKGROUND_BLUE,
+	BACKGROUND_RED | BACKGROUND_GREEN,
+	BACKGROUND_RED | BACKGROUND_BLUE,
+	BACKGROUND_GREEN | BACKGROUND_BLUE,
+	BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE,
+
+	BACKGROUND_INTENSITY,
+	BACKGROUND_INTENSITY | BACKGROUND_RED,
+	BACKGROUND_INTENSITY | BACKGROUND_GREEN,
+	BACKGROUND_INTENSITY | BACKGROUND_BLUE,
+	BACKGROUND_INTENSITY | BACKGROUND_RED | BACKGROUND_GREEN,
+	BACKGROUND_INTENSITY | BACKGROUND_RED | BACKGROUND_BLUE,
+	BACKGROUND_INTENSITY | BACKGROUND_GREEN | BACKGROUND_BLUE,
+	BACKGROUND_INTENSITY | BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE,
+};
+#endif
+
 namespace Lintel {
+	CHAR_INFO TChar::Translate_Win()
+	{
+		CHAR_INFO ret;
+		ToWchar(c, ret.Char.UnicodeChar);
+		ret.Attributes = TCTransFG_Win[fg_col] | TCTransBG_Win[bg_col];
+		return ret;
+	}
+
 	TRen::TRen()
 	{
 	#ifdef LN_PLATFORM_WINDOWS
-		// Size the console
 		getConsoleSize(&width, &height);
+
 		screenBuffer = new CHAR_INFO[width * height];
 
-		hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+		wHnd = GetStdHandle(STD_OUTPUT_HANDLE);
+		rHnd = GetStdHandle(STD_INPUT_HANDLE);
 
 		coordBufCoord.X = 0;
 		coordBufCoord.Y = 0;
@@ -42,6 +98,14 @@ namespace Lintel {
 	#endif
 	}
 
+	void TRen::setTitle(const char* termTitle)
+	{
+	#ifdef LN_PLATFORM_WINDOWS
+		// Be naughty and use the ANSI function so we don't need to do a conversion
+		SetConsoleTitleA(termTitle);
+	#endif
+	}
+
 	void TRen::resize(int w, int h)
 	{
 		width = w;
@@ -58,7 +122,7 @@ namespace Lintel {
 	{
 	#ifdef LN_PLATFORM_WINDOWS
 		WriteConsoleOutput(
-			hStdout,
+			wHnd,
 			screenBuffer,
 			coordBufSize,
 			coordBufCoord,
@@ -66,29 +130,32 @@ namespace Lintel {
 	#endif
  	}
 
-	void TRen::flushBuffer(CHAR_INFO blankChar)
+	void TRen::flushBuffer(TChar blankChar)
 	{
+		// In theory we just translate our TChar to the platform-appropriate type
+		// and call it `c` in the ifdef block. We'll see if this pans out when
+		// adding more platforms
+	#ifdef LN_PLATFORM_WINDOWS
+		CHAR_INFO c = blankChar.Translate_Win();
+	#endif
+		
 		for (int i = 0; i < width * height; i++)
 		{
-			screenBuffer[i] = blankChar;
+			screenBuffer[i] = c;
 		}
-		
 	}
 
-	void TRen::drawChar(CHAR_INFO c, int x, int y)
+	void TRen::drawChar(TChar sourceChar, int x, int y)
 	{
 		if (x >= width || y >= height)
 		{
 			return;
 		}
 
+	#ifdef LN_PLATFORM_WINDOWS
+		CHAR_INFO c = sourceChar.Translate_Win();
+	#endif
+
 		screenBuffer[y * width + x] = c;
 	}
-
-	void TRen::clear()
-	{
-		// Clear entire console, reset cursor to top-left
-		printf("\x1b[2J\x1b[H");
-	}
-
 }
