@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Lintel">
+      <UniqueIdentifier>{0D6ED1C0-F90F-FC96-E2CA-0FEBCE0B83E7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Lintel.h" />
+    <ClInclude Include="src\Lintel\Application.h">
+      <Filter>Lintel</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Lintel\Core.h">
+      <Filter>Lintel</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Lintel\EntryPoint.h">
+      <Filter>Lintel</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Lintel\Log.h">
+      <Filter>Lintel</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Lintel\TRen.h" />
+    <ClInclude Include="src\Lintel\Random.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Lintel\Application.cpp">
+      <Filter>Lintel</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Lintel\Log.cpp">
+      <Filter>Lintel</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Lintel\TRen.cpp" />
+    <ClCompile Include="src\Lintel\Random.cpp" />
+  </ItemGroup>
+</Project>
