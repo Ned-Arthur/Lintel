@@ -1,21 +1,34 @@
 #include "TRen.h"
 
-#include <windows.h>
-#include <stdio.h>
-#include <cstdlib>
-
-#include <stdexcept>
+#include <cstdio>
 
 namespace Lintel {
 	TRen::TRen()
 	{
-		// allocate memory for the buffer for certain
-		screenBuffer = (char*)malloc(sizeof(char));
-		width = 1;
-		height = 1;
+	#ifdef LN_PLATFORM_WINDOWS
+		// Size the console
+		getConsoleSize(&width, &height);
+		screenBuffer = new CHAR_INFO[width * height];
+
+		hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+
+		coordBufCoord.X = 0;
+		coordBufCoord.Y = 0;
+
+		coordBufSize.Y = height;
+		coordBufSize.X = width;
+
+		srctWriteRect.Top = 0;
+		srctWriteRect.Left = 0;
+		srctWriteRect.Bottom = height;
+		srctWriteRect.Right = width;
+	#endif
 	}
 	TRen::~TRen()
 	{
+	#ifdef LN_PLATFORM_WINDOWS
+		delete screenBuffer;
+	#endif
 	}
 
 	// Get the rows and columns of the console. This is platform-specific code
@@ -35,28 +48,25 @@ namespace Lintel {
 		height = h;
 
 		// Reallocate the character buffer
-		free(screenBuffer);
-		screenBuffer = (char*)malloc(sizeof(char) * width * height);
-
-		clear();
+	#ifdef LN_PLATFORM_WINDOWS
+		delete screenBuffer;
+		screenBuffer = new CHAR_INFO[width * height];
+	#endif
 	}
 
 	void TRen::redraw()
 	{
-		clear();
+	#ifdef LN_PLATFORM_WINDOWS
+		WriteConsoleOutput(
+			hStdout,
+			screenBuffer,
+			coordBufSize,
+			coordBufCoord,
+			&srctWriteRect);
+	#endif
+ 	}
 
-		printf("%s", screenBuffer);
-	}
-
-	void TRen::fillBuffer(char* newBuf)
-	{
-		for (int i = 0; i < width * height; i++)
-		{
-			screenBuffer[i] = newBuf[i];
-		}
-	}
-
-	void TRen::flushBuffer(char blankChar)
+	void TRen::flushBuffer(CHAR_INFO blankChar)
 	{
 		for (int i = 0; i < width * height; i++)
 		{
@@ -65,11 +75,10 @@ namespace Lintel {
 		
 	}
 
-	void TRen::drawChar(char c, int x, int y)
+	void TRen::drawChar(CHAR_INFO c, int x, int y)
 	{
-		if (x > width - 1 || y > height - 1)
+		if (x >= width || y >= height)
 		{
-			throw std::runtime_error("Tried to write a char outside the buffer size");
 			return;
 		}
 

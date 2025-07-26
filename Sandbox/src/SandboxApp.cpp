@@ -5,6 +5,8 @@
 #include <vector>
 #include <ctime>
 
+#define FOREGROUND_WHITE FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED
+
 class Sandbox : public Lintel::Application
 {
 public:
@@ -15,33 +17,24 @@ public:
 
 	void Setup() override
 	{
-		//printf("\x1b[=0h");
-		//printf("\x1b[38;5;41m");
-
-		//*
 		Lintel::TRen::getConsoleSize(&w, &h);
-		ren.resize(w, h);
-		ren.flushBuffer(' ');
-		printf("%d,%d\n", w, h);
-		for (int i = 0; i < h-1; i++)
-		{
-			printf("%d\n", i+1);
-		}
-		
-		//*/
 	}
 
 	void Update() override
 	{
 		//Lintel::TRen::getConsoleSize(&w, &h);
 		//ren.resize(w, h);
-		/*
-		ren.flushBuffer('.');
-		ren.drawChar('X', x, y);
-		x++;
-		y++;
-		if (x > w-10) x -= w+10;
-		if (y > h-10) y -= h+10;
+		//*
+		CHAR_INFO flushChar;
+		flushChar.Char.UnicodeChar = '.';
+		flushChar.Attributes = FOREGROUND_WHITE | BACKGROUND_BLUE;
+		ren.flushBuffer(flushChar);
+		CHAR_INFO cross;
+		cross.Char.UnicodeChar = 'X';
+		cross.Attributes = BACKGROUND_BLUE;
+		ren.drawChar(cross, x, y);
+		x++; x %= w;
+		y++; y %= h;
 		ren.redraw();
 		Sleep(500);
 		//*/
