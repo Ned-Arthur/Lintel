@@ -3,11 +3,9 @@
 #include <cstdio>
 
 // Platform specific implementations are better suited to the source I think;
-// None of this is needed by users
+// none of this is needed by users
 
-#define ToWchar(from, to) MultiByteToWideChar(CP_ACP, 0, &from, 1, &to, 1)
-
-// Translation tables
+// Colour translation tables
 #ifdef LN_PLATFORM_WINDOWS
 constexpr int TCTransFG_Win[16] = {
 	0,
@@ -50,13 +48,15 @@ constexpr int TCTransBG_Win[16] = {
 #endif
 
 namespace Lintel {
+#ifdef LN_PLATFORM_WINDOWS
 	CHAR_INFO TChar::Translate_Win()
 	{
 		CHAR_INFO ret;
-		ToWchar(c, ret.Char.UnicodeChar);
+		ret.Char.AsciiChar = c;
 		ret.Attributes = TCTransFG_Win[fg_col] | TCTransBG_Win[bg_col];
 		return ret;
 	}
+#endif
 
 	TRen::TRen()
 	{
@@ -95,11 +95,8 @@ namespace Lintel {
 		//TODO tidy up the console
 		SetConsoleCursorInfo(wHnd, &oldCI);
 	#endif
-
-		
 	}
 
-	// Get the rows and columns of the console. This is platform-specific code
 	void TRen::getConsoleSize(int* columns, int* rows)
 	{
 	#ifdef LN_PLATFORM_WINDOWS
@@ -158,23 +155,24 @@ namespace Lintel {
 		width = w;
 		height = h;
 
+	#ifdef LN_PLATFORM_WINDOWS
+		delete screenBuffer;
+		screenBuffer = new CHAR_INFO[width * height];
+
 		coordBufSize.Y = height;
 		coordBufSize.X = width;
 
 		srctWriteRect.Bottom = height;
 		srctWriteRect.Right = width;
-
-		// Reallocate the character buffer
-	#ifdef LN_PLATFORM_WINDOWS
-		delete screenBuffer;
-		screenBuffer = new CHAR_INFO[width * height];
 	#endif
 	}
 
 	void TRen::redraw()
 	{
 	#ifdef LN_PLATFORM_WINDOWS
-		WriteConsoleOutput(
+		// Use ANSI method so we don't have to deal with conversion bs and can
+		// just use ASCII/ANSI chars in App and maintain cross-platform-ness
+		WriteConsoleOutputA(
 			wHnd,
 			screenBuffer,
 			coordBufSize,
@@ -216,7 +214,6 @@ namespace Lintel {
 	{
 		for (int i = 0; i < strlen(msg); i++)
 		{
-			//TChar c(msg[i], BLACK, I_GREEN);
 			TChar c = temp;
 			c.c = msg[i];
 			drawChar(c, x + i, y);

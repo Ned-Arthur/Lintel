@@ -12,6 +12,7 @@ public:
 	char posString[30];
 
 	double maxFps = 0.0;
+	double runningTime = 0.0;
 
 	void Setup() override
 	{
@@ -22,8 +23,9 @@ public:
 	void Update() override
 	{
 		double dT = getDeltaTime();
+		runningTime += dT;
 		double fps = 1 / dT;
-		if (fps > maxFps && fps < 10000.0) maxFps = fps;
+		if (runningTime > 1.0 && fps > maxFps) maxFps = fps;
 		
 		Lintel::TRen::getConsoleSize(&w, &h);
 		//ren.resize(w, h);
@@ -54,11 +56,11 @@ public:
 		if (x > w) x -= w;
 		if (y > h) y -= h;
 		if (x < 0) x += w;
-		if (y < 0) x += h;
+		if (y < 0) y += h;
 
-		sprintf(posString, "FPS=%f", fps);
+		sprintf(posString, "    FPS=%f", fps);
 		ren.drawMsg(posString, I_YELLOW, GREEN, 10, 1);
-		sprintf(posString, "Max FPS=%f", maxFps);
+		sprintf(posString, "Avg FPS=%f", maxFps);
 		ren.drawMsg(posString, I_YELLOW, GREEN, 10, 2);
 		ren.drawChar(cross, w-1, h-1);
 		ren.redraw();
