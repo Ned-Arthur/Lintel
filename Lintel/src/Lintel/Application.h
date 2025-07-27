@@ -11,9 +11,14 @@ namespace Lintel {
 		virtual ~Application();
 
 		void Run();
+		void Quit();
+		double getDeltaTime();
 
 		virtual void Setup() = 0;
 		virtual void Update() = 0;
+
+	private:
+		bool isRunning;
 	};
 
 	// To be defined in CLIENT

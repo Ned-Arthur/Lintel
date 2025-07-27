@@ -78,13 +78,25 @@ namespace Lintel {
 		srctWriteRect.Left = 0;
 		srctWriteRect.Bottom = height;
 		srctWriteRect.Right = width;
+
+		
+		GetConsoleCursorInfo(wHnd, &oldCI);
+		CONSOLE_CURSOR_INFO ci = oldCI;
+		ci.bVisible = FALSE;
+		SetConsoleCursorInfo(wHnd, &ci);
+
 	#endif
 	}
 	TRen::~TRen()
 	{
 	#ifdef LN_PLATFORM_WINDOWS
-		delete screenBuffer;
+		delete[] screenBuffer;
+		
+		//TODO tidy up the console
+		SetConsoleCursorInfo(wHnd, &oldCI);
 	#endif
+
+		
 	}
 
 	// Get the rows and columns of the console. This is platform-specific code
@@ -106,10 +118,51 @@ namespace Lintel {
 	#endif
 	}
 
+	// Call this every frame to check events I guess
+	void TRen::update()
+	{
+		DWORD numEvents = 0;
+		DWORD numEventsRead = 0;
+
+		GetNumberOfConsoleInputEvents(rHnd, &numEvents);
+
+		if (numEvents != 0)
+		{
+			INPUT_RECORD* eventBuffer = new INPUT_RECORD[numEvents];
+			ReadConsoleInput(rHnd, eventBuffer, numEvents, &numEventsRead);
+
+			for (DWORD i = 0; i < numEventsRead; ++i)
+			{
+				switch (eventBuffer[i].EventType)
+				{
+				case KEY_EVENT:
+					switch (eventBuffer[i].Event.KeyEvent.wVirtualKeyCode) {
+					case VK_ESCAPE:
+						// Quit the game
+						escPressed = true;
+						break;
+					}
+					break;
+				case WINDOW_BUFFER_SIZE_EVENT:
+					COORD newSize = eventBuffer[i].Event.WindowBufferSizeEvent.dwSize;
+					resize(newSize.X, newSize.Y);
+				}
+			}
+
+			delete[] eventBuffer;
+		}
+	}
+
 	void TRen::resize(int w, int h)
 	{
 		width = w;
 		height = h;
+
+		coordBufSize.Y = height;
+		coordBufSize.X = width;
+
+		srctWriteRect.Bottom = height;
+		srctWriteRect.Right = width;
 
 		// Reallocate the character buffer
 	#ifdef LN_PLATFORM_WINDOWS
@@ -157,5 +210,23 @@ namespace Lintel {
 	#endif
 
 		screenBuffer[y * width + x] = c;
+	}
+
+	void TRen::drawMsg(const char* msg, TChar temp, int x, int y)
+	{
+		for (int i = 0; i < strlen(msg); i++)
+		{
+			//TChar c(msg[i], BLACK, I_GREEN);
+			TChar c = temp;
+			c.c = msg[i];
+			drawChar(c, x + i, y);
+		}
+	}
+	void TRen::drawMsg(const char* msg, TermColour fgColour, TermColour bgColour, int x, int y)
+	{
+		for (int i = 0; i < strlen(msg); i++)
+		{
+			drawChar(TChar(msg[i], fgColour, bgColour), x + i, y);
+		}
 	}
 }

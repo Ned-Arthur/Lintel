@@ -55,10 +55,15 @@ namespace Lintel {
 
 		void setTitle(const char* termTitle);
 
+		void update();
 		void resize(int w, int h);
 		void redraw();
 		void flushBuffer(TChar blankChar);
 		void drawChar(TChar c, int x, int y);
+		void drawMsg(const char* msg, TChar temp, int x, int y);
+		void drawMsg(const char* msg, TermColour fgColour, TermColour bgColour, int x, int y);
+
+		bool escPressed = false;
 	private:
 		int width;
 		int height;
@@ -71,6 +76,7 @@ namespace Lintel {
 		SMALL_RECT srctWriteRect;
 		COORD coordBufSize;
 		COORD coordBufCoord;
+		CONSOLE_CURSOR_INFO oldCI;	// To restore the console after closing
 	#endif
 	};
 }
