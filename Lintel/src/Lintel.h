@@ -5,12 +5,15 @@
 #include "Lintel/Application.h"
 
 ///////////////// Tools /////////////////
+#include "Lintel/Input.h"
+#include "Lintel/LnTime.h"
 #include "Lintel/Random.h"
-#include "Lintel/Log.h"
 /////////////////////////////////////////
 
 /////////// Terminal Renderer ///////////
-#include "Lintel/TRen.h"
+#include "Lintel/TermRender/TRen.h"
+#include "Lintel/TermRender/TChar.h"
+#include "Lintel/TermRender/TSprite.h"
 /////////////////////////////////////////
 
 ////////////// Entry Point //////////////

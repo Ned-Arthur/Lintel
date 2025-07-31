@@ -3,6 +3,7 @@
 #include <chrono>
 
 #include "Random.h"
+#include "LnTime.h"
 
 namespace Lintel {
 	Application::Application()
@@ -19,22 +20,13 @@ namespace Lintel {
 		Setup();
 		while (isRunning)
 		{
+			Lintel::Time::Update();
 			Update();
 		}
 	}
 	void Application::Quit()
 	{
-		isRunning = false;
-	}
-
-	double Application::getDeltaTime()
-	{
-		static auto lastTime = std::chrono::steady_clock::now();
-		auto currentTime = std::chrono::steady_clock::now();
-
-		double deltaTime = std::chrono::duration<double>(currentTime - lastTime).count();
-		lastTime = currentTime;
-
-		return deltaTime;
+		isRunning = false;	// Drawing a sprite manually makes this not work :'(
+		exit(0);			// Really really quit
 	}
 }

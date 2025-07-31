@@ -1,7 +1,5 @@
 #include <Lintel.h>
 
-#include <windows.h>
-
 class Sandbox : public Lintel::Application
 {
 public:
@@ -12,46 +10,57 @@ public:
 	char posString[30];
 
 	double maxFps = 0.0;
-	double runningTime = 0.0;
+
+	Lintel::TSprite sprite;
 
 	void Setup() override
-	{
+	{		
+		sprite.setSpriteFromString("\\O/ | / \\", 3, 3, Lintel::I_MAGENTA, Lintel::I_WHITE);
+		
 		Lintel::TRen::getConsoleSize(&w, &h);
+
 		ren.setTitle("Sandbox Game");
+		ren.useConsole(&h, 1);
 	}
 
 	void Update() override
 	{
-		double dT = getDeltaTime();
-		runningTime += dT;
-		double fps = 1 / dT;
-		if (runningTime > 1.0 && fps > maxFps) maxFps = fps;
+		ren.update(&w, &h);
 		
-		Lintel::TRen::getConsoleSize(&w, &h);
-		//ren.resize(w, h);
-		ren.update();
-		if (ren.escPressed == true) Quit();
-		Lintel::TChar flushChar(' ', WHITE, WHITE);
+		
+		
+		double fps = 1 / Lintel::Time::deltaTime;
+		if (Lintel::Time::clockTime > 1.0 && fps > maxFps) maxFps = fps;
+		
+		if (Lintel::Input::getKeyState(Lintel::K_ESCAPE).currentState) Quit();
+		
+		Lintel::TChar flushChar(' ', Lintel::WHITE, Lintel::WHITE);
 		ren.flushBuffer(flushChar);
 
-		Lintel::TChar cross('X', BLACK, WHITE);
-		ren.drawChar(cross, x, y);
+		
+
+		ren.drawSprite(sprite, x - 1, y - 1);
+
+		Lintel::TChar cross('X', Lintel::BLACK, Lintel::WHITE);
+		//ren.drawChar(cross, x, y);
 		float speed = 20.0f;
-		if (GetAsyncKeyState('A'))
+		if (Lintel::Input::getKeyState('A').currentState)
 		{
-			x -= (speed * dT);
+			x -= (speed * Lintel::Time::deltaTime);
+			ren.logString("Testing testing 123.");
 		}
-		if (GetAsyncKeyState('D'))
+		if (Lintel::Input::getKeyState('D').currentState)
 		{
-			x += (speed * dT);
+			x += (speed * Lintel::Time::deltaTime);
+			ren.logString("Another test...");
 		}
-		if (GetAsyncKeyState('W'))
+		if (Lintel::Input::getKeyState('W').currentState)
 		{
-			y -= (speed * dT);
+			y -= (speed * Lintel::Time::deltaTime);
 		}
-		if (GetAsyncKeyState('S'))
+		if (Lintel::Input::getKeyState('S').currentState)
 		{
-			y += (speed * dT);
+			y += (speed * Lintel::Time::deltaTime);
 		}
 		if (x > w) x -= w;
 		if (y > h) y -= h;
@@ -59,10 +68,13 @@ public:
 		if (y < 0) y += h;
 
 		sprintf(posString, "    FPS=%f", fps);
-		ren.drawMsg(posString, I_YELLOW, GREEN, 10, 1);
-		sprintf(posString, "Avg FPS=%f", maxFps);
-		ren.drawMsg(posString, I_YELLOW, GREEN, 10, 2);
+		ren.drawMsg(posString, Lintel::I_YELLOW, Lintel::GREEN, 10, 1);
+		sprintf(posString, "Max FPS=%f", maxFps);
+		ren.drawMsg(posString, Lintel::I_YELLOW, Lintel::GREEN, 10, 2);
 		ren.drawChar(cross, w-1, h-1);
+
+		
+		
 		ren.redraw();
 	}
 };

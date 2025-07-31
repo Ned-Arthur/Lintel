@@ -1,46 +1,13 @@
 #pragma once
 
-#include "Core.h"
+#include "../Core.h"
+
+#include "TChar.h"
+#include "TSprite.h"
 
 #include <windows.h>
 
-
-// The windows implementation only supports 8/16 colours, so we'll keep that
-// limitation for the whole render pipeline
-enum TermColour {
-	BLACK,
-	RED,
-	GREEN,
-	BLUE,
-	YELLOW,
-	MAGENTA,
-	CYAN,
-	WHITE,
-	// I_ for Intense
-	I_BLACK,
-	I_RED,
-	I_GREEN,
-	I_BLUE,
-	I_YELLOW,
-	I_MAGENTA,
-	I_CYAN,
-	I_WHITE
-};
-
 namespace Lintel {
-
-	struct TChar {
-		TChar(char _c, TermColour _fg_col, TermColour _bg_col) : c(_c), fg_col(_fg_col), bg_col(_bg_col) {}
-		char c;
-		TermColour fg_col;
-		TermColour bg_col;
-		// None of the windows grid attributes seem to work, so that's all we need
-
-	#ifdef LN_PLATFORM_WINDOWS
-		CHAR_INFO Translate_Win();
-	#endif
-	};
-
 	// A Terminal Renderer
 	// Primarily uses ANSI escape codes to draw text to whatever terminal the
 	// user is running. While not completely universal, at least windows cmd
@@ -54,21 +21,28 @@ namespace Lintel {
 		static void getConsoleSize(int* x, int* y);
 
 		void setTitle(const char* termTitle);
+		void useConsole(int* h, int lines = 5);
 
-		void update();
+		void logString(const char* msg, ...);
+
+		void update(int* gameW, int* gameH);
 		void resize(int w, int h);
 		void redraw();
 		void flushBuffer(TChar blankChar);
 		void drawChar(TChar c, int x, int y);
 		void drawMsg(const char* msg, TChar temp, int x, int y);
 		void drawMsg(const char* msg, TermColour fgColour, TermColour bgColour, int x, int y);
-
-		bool escPressed = false;
+		void drawSprite(TSprite sprite, int x, int y);
 	private:
+		void drawCharUnsafe(TChar sourceChar, int x, int y);
+		TChar getChar(int x, int y);
+
 		int width;
 		int height;
 
-		// Platform specific implementation
+		int consoleLines = 0;
+
+		// Platform specific implementation data
 	#ifdef LN_PLATFORM_WINDOWS
 		CHAR_INFO* screenBuffer;
 		HANDLE wHnd;				// Handle for window writing

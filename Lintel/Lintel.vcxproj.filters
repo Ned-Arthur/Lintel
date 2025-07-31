@@ -4,6 +4,9 @@
     <Filter Include="Lintel">
       <UniqueIdentifier>{0D6ED1C0-F90F-FC96-E2CA-0FEBCE0B83E7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Lintel\TermRender">
+      <UniqueIdentifier>{7448C791-E05E-C527-29D6-5049952B96AF}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Lintel.h" />
@@ -16,20 +19,37 @@
     <ClInclude Include="src\Lintel\EntryPoint.h">
       <Filter>Lintel</Filter>
     </ClInclude>
-    <ClInclude Include="src\Lintel\Log.h">
+    <ClInclude Include="src\Lintel\Input.h">
       <Filter>Lintel</Filter>
     </ClInclude>
-    <ClInclude Include="src\Lintel\TRen.h" />
-    <ClInclude Include="src\Lintel\Random.h" />
+    <ClInclude Include="src\Lintel\LnTime.h">
+      <Filter>Lintel</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Lintel\Random.h">
+      <Filter>Lintel</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Lintel\TermRender\TRen.h">
+      <Filter>Lintel\TermRender</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Lintel\TermRender\TSprite.h" />
+    <ClInclude Include="src\Lintel\TermRender\TChar.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Lintel\Application.cpp">
       <Filter>Lintel</Filter>
     </ClCompile>
-    <ClCompile Include="src\Lintel\Log.cpp">
+    <ClCompile Include="src\Lintel\Input.cpp">
       <Filter>Lintel</Filter>
     </ClCompile>
-    <ClCompile Include="src\Lintel\TRen.cpp" />
-    <ClCompile Include="src\Lintel\Random.cpp" />
+    <ClCompile Include="src\Lintel\LnTime.cpp">
+      <Filter>Lintel</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Lintel\Random.cpp">
+      <Filter>Lintel</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Lintel\TermRender\TRen.cpp">
+      <Filter>Lintel\TermRender</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Lintel\TermRender\TSprite.cpp" />
   </ItemGroup>
 </Project>

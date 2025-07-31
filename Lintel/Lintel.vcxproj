@@ -59,6 +59,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>LN_PLATFORM_WINDOWS;LN_BUILD_DLL;LN_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;src\Lintel;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -79,6 +80,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>LN_PLATFORM_WINDOWS;LN_BUILD_DLL;LN_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;src\Lintel;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -99,19 +101,24 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\Lintel\Random.h" />
     <ClInclude Include="src\Lintel.h" />
     <ClInclude Include="src\Lintel\Application.h" />
     <ClInclude Include="src\Lintel\Core.h" />
     <ClInclude Include="src\Lintel\EntryPoint.h" />
-    <ClInclude Include="src\Lintel\Log.h" />
-    <ClInclude Include="src\Lintel\TRen.h" />
+    <ClInclude Include="src\Lintel\Input.h" />
+    <ClInclude Include="src\Lintel\LnTime.h" />
+    <ClInclude Include="src\Lintel\Random.h" />
+    <ClInclude Include="src\Lintel\TermRender\TRen.h" />
+    <ClInclude Include="src\Lintel\TermRender\TSprite.h" />
+    <ClInclude Include="src\Lintel\TermRender\TChar.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Lintel\Random.cpp" />
     <ClCompile Include="src\Lintel\Application.cpp" />
-    <ClCompile Include="src\Lintel\Log.cpp" />
-    <ClCompile Include="src\Lintel\TRen.cpp" />
+    <ClCompile Include="src\Lintel\Input.cpp" />
+    <ClCompile Include="src\Lintel\LnTime.cpp" />
+    <ClCompile Include="src\Lintel\Random.cpp" />
+    <ClCompile Include="src\Lintel\TermRender\TRen.cpp" />
+    <ClCompile Include="src\Lintel\TermRender\TSprite.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

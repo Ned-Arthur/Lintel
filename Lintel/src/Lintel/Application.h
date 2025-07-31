@@ -12,7 +12,6 @@ namespace Lintel {
 
 		void Run();
 		void Quit();
-		double getDeltaTime();
 
 		virtual void Setup() = 0;
 		virtual void Update() = 0;

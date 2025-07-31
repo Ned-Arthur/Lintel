@@ -29,7 +29,8 @@ project "Lintel"
 	-- Libraries used by the engine, should remain empty
 	includedirs
 	{
-		"%{prj.name}/src"
+		"%{prj.name}/src",
+		"%{prj.name}/src/Lintel",
 	}
 
 ----- PLATFORMS -----

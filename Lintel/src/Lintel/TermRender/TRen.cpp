@@ -1,5 +1,7 @@
 #include "TRen.h"
 
+#include "Input.h"
+
 #include <cstdio>
 
 // Platform specific implementations are better suited to the source I think;
@@ -45,6 +47,9 @@ constexpr int TCTransBG_Win[16] = {
 	BACKGROUND_INTENSITY | BACKGROUND_GREEN | BACKGROUND_BLUE,
 	BACKGROUND_INTENSITY | BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE,
 };
+
+
+
 #endif
 
 namespace Lintel {
@@ -115,14 +120,57 @@ namespace Lintel {
 	#endif
 	}
 
-	// Call this every frame to check events I guess
-	void TRen::update()
+	void TRen::useConsole(int* h, int lines)
 	{
+		consoleLines = lines;
+		height -= consoleLines;
+		*h = height;
+	}
+
+	// Behave like printf, using scanf
+	void TRen::logString(const char* msg, ...)
+	{
+		// First do a scanf to format the string
+		va_list args;
+
+		
+		
+		// Shift our previous logs up
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < width; j++)
+			{
+				drawCharUnsafe(getChar(j, i + 1), j, i);
+			}
+		}
+
+		for (int i = 0; i < strlen(msg); i++)
+		{
+			drawCharUnsafe(TChar(msg[i], WHITE, BLACK), 0 + i, height + (consoleLines-1));
+		}
+	}
+
+	// Call this every frame to check events I guess
+	void TRen::update(int* gameW, int* gameH)
+	{
+		// Fill any console space
+		if (consoleLines > 0)
+		{
+			TChar termBlankChar = TChar(' ', WHITE, BLACK);
+		#ifdef LN_PLATFORM_WINDOWS
+			CHAR_INFO c = termBlankChar.Translate_Win();
+		#endif
+
+			for (int i = width * height; i < width * (height + consoleLines); i++)
+			{
+				screenBuffer[i] = c;
+			}
+		}
+
+		// Handle (console) window events
 		DWORD numEvents = 0;
 		DWORD numEventsRead = 0;
-
 		GetNumberOfConsoleInputEvents(rHnd, &numEvents);
-
 		if (numEvents != 0)
 		{
 			INPUT_RECORD* eventBuffer = new INPUT_RECORD[numEvents];
@@ -135,13 +183,20 @@ namespace Lintel {
 				case KEY_EVENT:
 					switch (eventBuffer[i].Event.KeyEvent.wVirtualKeyCode) {
 					case VK_ESCAPE:
-						// Quit the game
-						escPressed = true;
+						Input::setKeyState(K_ESCAPE, true);
+						
 						break;
 					}
+
+					Input::setKeyState(eventBuffer[i].Event.KeyEvent.uChar.AsciiChar, eventBuffer[i].Event.KeyEvent.bKeyDown);
+
 					break;
 				case WINDOW_BUFFER_SIZE_EVENT:
 					COORD newSize = eventBuffer[i].Event.WindowBufferSizeEvent.dwSize;
+					// Tell the game what size it's running at
+					*gameW = newSize.X;
+					*gameH = newSize.Y - consoleLines;
+					// Update all our variables to store & draw at the right sizes
 					resize(newSize.X, newSize.Y);
 				}
 			}
@@ -169,6 +224,7 @@ namespace Lintel {
 
 	void TRen::redraw()
 	{
+		// Draw the character buffer to the console
 	#ifdef LN_PLATFORM_WINDOWS
 		// Use ANSI method so we don't have to deal with conversion bs and can
 		// just use ASCII/ANSI chars in App and maintain cross-platform-ness
@@ -199,15 +255,9 @@ namespace Lintel {
 	void TRen::drawChar(TChar sourceChar, int x, int y)
 	{
 		if (x >= width || y >= height)
-		{
 			return;
-		}
 
-	#ifdef LN_PLATFORM_WINDOWS
-		CHAR_INFO c = sourceChar.Translate_Win();
-	#endif
-
-		screenBuffer[y * width + x] = c;
+		drawCharUnsafe(sourceChar, x, y);
 	}
 
 	void TRen::drawMsg(const char* msg, TChar temp, int x, int y)
@@ -225,5 +275,73 @@ namespace Lintel {
 		{
 			drawChar(TChar(msg[i], fgColour, bgColour), x + i, y);
 		}
+	}
+
+	void TRen::drawSprite(TSprite sprite, int x, int y)
+	{
+		// Check the bounds first so we can avoid bounds-checking every char
+		int w = sprite.getWidth();
+		int h = sprite.getHeight();
+		
+
+		bool isFullySafe = (x >= 0 && y >= 0 && x + w <= width && y + h <= height);
+		if (!isFullySafe)
+		{
+			// Adjust the sprite bounds
+			// Right-bottom
+			w -= (w - width);
+			h -= (h - height);
+		}
+		isFullySafe = (x >= 0 && y >= 0 && x + w <= width && y + h <= height);
+
+		for (int i = 0; i < w; i++)
+		{
+			for (int j = 0; j < h; j++)
+			{
+				if (isFullySafe)
+				{
+					drawCharUnsafe(sprite.getCharAtPosition(i, j), x + i, y + j);
+				}
+				else
+				{
+					//drawChar(sprite.getCharAtPosition(i, j), x + i, y + j);
+				}
+			}
+		}
+	}
+
+	void TRen::drawCharUnsafe(TChar sourceChar, int x, int y)
+	{
+#ifdef LN_PLATFORM_WINDOWS
+		CHAR_INFO c = sourceChar.Translate_Win();
+#endif
+
+		screenBuffer[y * width + x] = c;
+	}
+	TChar TRen::getChar(int x, int y)
+	{
+		TChar ret;
+
+	#ifdef LN_PLATFORM_WINDOWS
+		CHAR_INFO winChar = screenBuffer[y * width + x];
+
+		ret.c = winChar.Char.AsciiChar;
+
+		WORD fgSource = winChar.Attributes & 0x000f;
+		WORD bgSource = winChar.Attributes & 0x00f0;
+
+		for (int i = 0; i < 16; i++)
+		{
+			if (TCTransFG_Win[i] == fgSource)
+				ret.fg_col = (TermColour)i;
+
+			if (TCTransBG_Win[i] == bgSource)
+				ret.bg_col = (TermColour)i;
+		}
+
+		//ret.Attributes = TCTransFG_Win[fg_col] | TCTransBG_Win[bg_col];
+	#endif
+		
+		return ret;
 	}
 }
