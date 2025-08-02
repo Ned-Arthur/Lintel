@@ -120,52 +120,9 @@ namespace Lintel {
 	#endif
 	}
 
-	void TRen::useConsole(int* h, int lines)
-	{
-		consoleLines = lines;
-		height -= consoleLines;
-		*h = height;
-	}
-
-	// Behave like printf, using scanf
-	void TRen::logString(const char* msg, ...)
-	{
-		// First do a scanf to format the string
-		va_list args;
-
-		
-		
-		// Shift our previous logs up
-		for (int i = 0; i < 4; i++)
-		{
-			for (int j = 0; j < width; j++)
-			{
-				drawCharUnsafe(getChar(j, i + 1), j, i);
-			}
-		}
-
-		for (int i = 0; i < strlen(msg); i++)
-		{
-			drawCharUnsafe(TChar(msg[i], WHITE, BLACK), 0 + i, height + (consoleLines-1));
-		}
-	}
-
 	// Call this every frame to check events I guess
 	void TRen::update(int* gameW, int* gameH)
 	{
-		// Fill any console space
-		if (consoleLines > 0)
-		{
-			TChar termBlankChar = TChar(' ', WHITE, BLACK);
-		#ifdef LN_PLATFORM_WINDOWS
-			CHAR_INFO c = termBlankChar.Translate_Win();
-		#endif
-
-			for (int i = width * height; i < width * (height + consoleLines); i++)
-			{
-				screenBuffer[i] = c;
-			}
-		}
 
 		// Handle (console) window events
 		DWORD numEvents = 0;
@@ -195,7 +152,7 @@ namespace Lintel {
 					COORD newSize = eventBuffer[i].Event.WindowBufferSizeEvent.dwSize;
 					// Tell the game what size it's running at
 					*gameW = newSize.X;
-					*gameH = newSize.Y - consoleLines;
+					*gameH = newSize.Y;
 					// Update all our variables to store & draw at the right sizes
 					resize(newSize.X, newSize.Y);
 				}
@@ -317,31 +274,5 @@ namespace Lintel {
 #endif
 
 		screenBuffer[y * width + x] = c;
-	}
-	TChar TRen::getChar(int x, int y)
-	{
-		TChar ret;
-
-	#ifdef LN_PLATFORM_WINDOWS
-		CHAR_INFO winChar = screenBuffer[y * width + x];
-
-		ret.c = winChar.Char.AsciiChar;
-
-		WORD fgSource = winChar.Attributes & 0x000f;
-		WORD bgSource = winChar.Attributes & 0x00f0;
-
-		for (int i = 0; i < 16; i++)
-		{
-			if (TCTransFG_Win[i] == fgSource)
-				ret.fg_col = (TermColour)i;
-
-			if (TCTransBG_Win[i] == bgSource)
-				ret.bg_col = (TermColour)i;
-		}
-
-		//ret.Attributes = TCTransFG_Win[fg_col] | TCTransBG_Win[bg_col];
-	#endif
-		
-		return ret;
 	}
 }

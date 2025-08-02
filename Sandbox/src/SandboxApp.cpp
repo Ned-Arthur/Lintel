@@ -20,15 +20,12 @@ public:
 		Lintel::TRen::getConsoleSize(&w, &h);
 
 		ren.setTitle("Sandbox Game");
-		ren.useConsole(&h, 1);
 	}
 
 	void Update() override
 	{
 		ren.update(&w, &h);
-		
-		
-		
+
 		double fps = 1 / Lintel::Time::deltaTime;
 		if (Lintel::Time::clockTime > 1.0 && fps > maxFps) maxFps = fps;
 		
@@ -47,12 +44,10 @@ public:
 		if (Lintel::Input::getKeyState('A').currentState)
 		{
 			x -= (speed * Lintel::Time::deltaTime);
-			ren.logString("Testing testing 123.");
 		}
 		if (Lintel::Input::getKeyState('D').currentState)
 		{
 			x += (speed * Lintel::Time::deltaTime);
-			ren.logString("Another test...");
 		}
 		if (Lintel::Input::getKeyState('W').currentState)
 		{
@@ -72,8 +67,6 @@ public:
 		sprintf(posString, "Max FPS=%f", maxFps);
 		ren.drawMsg(posString, Lintel::I_YELLOW, Lintel::GREEN, 10, 2);
 		ren.drawChar(cross, w-1, h-1);
-
-		
 		
 		ren.redraw();
 	}

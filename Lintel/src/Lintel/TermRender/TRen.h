@@ -21,9 +21,6 @@ namespace Lintel {
 		static void getConsoleSize(int* x, int* y);
 
 		void setTitle(const char* termTitle);
-		void useConsole(int* h, int lines = 5);
-
-		void logString(const char* msg, ...);
 
 		void update(int* gameW, int* gameH);
 		void resize(int w, int h);
@@ -35,12 +32,9 @@ namespace Lintel {
 		void drawSprite(TSprite sprite, int x, int y);
 	private:
 		void drawCharUnsafe(TChar sourceChar, int x, int y);
-		TChar getChar(int x, int y);
 
 		int width;
 		int height;
-
-		int consoleLines = 0;
 
 		// Platform specific implementation data
 	#ifdef LN_PLATFORM_WINDOWS
