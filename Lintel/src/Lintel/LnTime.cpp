@@ -10,7 +10,6 @@ namespace Lintel {
 
 	void Time::Update()
 	{
-		//static auto lastTime = std::chrono::steady_clock::now();
 		auto currentTime = std::chrono::steady_clock::now();
 
 		deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();

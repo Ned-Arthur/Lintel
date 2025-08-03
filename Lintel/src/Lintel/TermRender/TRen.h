@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../Core.h"
-
 #include "TChar.h"
 #include "TSprite.h"
 
@@ -12,7 +10,7 @@ namespace Lintel {
 	// Primarily uses ANSI escape codes to draw text to whatever terminal the
 	// user is running. While not completely universal, at least windows cmd
 	// and most linux terminals should work OK with this.
-	class LINTEL_API TRen
+	class TRen
 	{
 	public:
 		TRen();

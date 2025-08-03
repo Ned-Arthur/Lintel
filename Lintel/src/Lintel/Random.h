@@ -1,11 +1,10 @@
 #pragma once
 
-#include "Core.h"
 #include <vector>
 
 namespace Lintel {
 
-	class LINTEL_API Random
+	class Random
 	{
 	public:
 		static void initialise();

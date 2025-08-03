@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../Core.h"
-
 #include <windows.h>
 
 namespace Lintel {
@@ -28,7 +26,7 @@ namespace Lintel {
 		I_WHITE
 	};
 
-	struct LINTEL_API TChar
+	struct TChar
 	{
 		TChar(char _c, TermColour _fg_col, TermColour _bg_col) : c(_c), fg_col(_fg_col), bg_col(_bg_col) {}
 		TChar() : c('a'), fg_col(WHITE), bg_col(BLACK) {}

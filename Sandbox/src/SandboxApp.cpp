@@ -4,19 +4,20 @@ class Sandbox : public Lintel::Application
 {
 public:
 	Lintel::TRen ren;
-	float x = 0;
-	float y = 0;
+	float x = 10;
+	float y = 10;
+	float speed = 10.0f;
 	int w, h;
-	char posString[30];
-
-	double maxFps = 0.0;
+	static const size_t pStrSize = 30;
+	char posString[pStrSize];
 
 	Lintel::TSprite sprite;
 
 	void Setup() override
 	{		
-		sprite.setSpriteFromString("\\O/ | / \\", 3, 3, Lintel::I_MAGENTA, Lintel::I_WHITE);
-		
+		//sprite.setSpriteFromString("\\O/ | / \\", 3, 3, Lintel::I_MAGENTA, Lintel::I_WHITE);
+		sprite.loadSprite("assets/demo.spt");
+
 		Lintel::TRen::getConsoleSize(&w, &h);
 
 		ren.setTitle("Sandbox Game");
@@ -25,22 +26,25 @@ public:
 	void Update() override
 	{
 		ren.update(&w, &h);
-
-		double fps = 1 / Lintel::Time::deltaTime;
-		if (Lintel::Time::clockTime > 1.0 && fps > maxFps) maxFps = fps;
 		
 		if (Lintel::Input::getKeyState(Lintel::K_ESCAPE).currentState) Quit();
 		
 		Lintel::TChar flushChar(' ', Lintel::WHITE, Lintel::WHITE);
 		ren.flushBuffer(flushChar);
 
-		
-
-		ren.drawSprite(sprite, x - 1, y - 1);
+		ren.drawSprite(sprite, (int)(x - 1), (int)(y - 1));
 
 		Lintel::TChar cross('X', Lintel::BLACK, Lintel::WHITE);
-		//ren.drawChar(cross, x, y);
-		float speed = 20.0f;
+
+		sprintf_s(posString, pStrSize, "%f, %f", x, y);
+		ren.drawMsg(posString, Lintel::I_YELLOW, Lintel::GREEN, w-30, 1);
+		sprintf_s(posString, pStrSize, "%d, %d", (int)x, (int)y);
+		ren.drawMsg(posString, Lintel::I_YELLOW, Lintel::GREEN, w - 30, 2);
+
+		ren.drawChar(cross, w-1, h-1);
+		
+		ren.redraw();
+
 		if (Lintel::Input::getKeyState('A').currentState)
 		{
 			x -= (speed * Lintel::Time::deltaTime);
@@ -57,18 +61,10 @@ public:
 		{
 			y += (speed * Lintel::Time::deltaTime);
 		}
-		if (x > w) x -= w;
-		if (y > h) y -= h;
-		if (x < 0) x += w;
-		if (y < 0) y += h;
-
-		sprintf(posString, "    FPS=%f", fps);
-		ren.drawMsg(posString, Lintel::I_YELLOW, Lintel::GREEN, 10, 1);
-		sprintf(posString, "Max FPS=%f", maxFps);
-		ren.drawMsg(posString, Lintel::I_YELLOW, Lintel::GREEN, 10, 2);
-		ren.drawChar(cross, w-1, h-1);
-		
-		ren.redraw();
+		if (x > w) x -= w+1;
+		if (y > h) y -= h+1;
+		if (x < -1) x += w+1;
+		if (y < -1) y += h+1;
 	}
 };
 

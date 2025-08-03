@@ -1,6 +1,5 @@
 #pragma once
 
-
 #ifdef LN_PLATFORM_WINDOWS
 
 extern Lintel::Application* Lintel::CreateApplication();

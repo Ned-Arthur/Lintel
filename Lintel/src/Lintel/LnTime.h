@@ -1,12 +1,10 @@
 #pragma once
 
-#include "Core.h"
-
 #include <chrono>
 
 namespace Lintel {
 
-	class LINTEL_API Time
+	class Time
 	{
 	public:
 		static float deltaTime;		// Time since last frame
@@ -17,8 +15,6 @@ namespace Lintel {
 	private:
 		static std::chrono::steady_clock::time_point startTime;
 		static std::chrono::steady_clock::time_point lastTime;
-
-		static float calculateDeltaTime();
 	};
 
 }

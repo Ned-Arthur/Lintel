@@ -13,9 +13,6 @@
     <ClInclude Include="src\Lintel\Application.h">
       <Filter>Lintel</Filter>
     </ClInclude>
-    <ClInclude Include="src\Lintel\Core.h">
-      <Filter>Lintel</Filter>
-    </ClInclude>
     <ClInclude Include="src\Lintel\EntryPoint.h">
       <Filter>Lintel</Filter>
     </ClInclude>
@@ -28,11 +25,15 @@
     <ClInclude Include="src\Lintel\Random.h">
       <Filter>Lintel</Filter>
     </ClInclude>
+    <ClInclude Include="src\Lintel\TermRender\TChar.h">
+      <Filter>Lintel\TermRender</Filter>
+    </ClInclude>
     <ClInclude Include="src\Lintel\TermRender\TRen.h">
       <Filter>Lintel\TermRender</Filter>
     </ClInclude>
-    <ClInclude Include="src\Lintel\TermRender\TSprite.h" />
-    <ClInclude Include="src\Lintel\TermRender\TChar.h" />
+    <ClInclude Include="src\Lintel\TermRender\TSprite.h">
+      <Filter>Lintel\TermRender</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Lintel\Application.cpp">
@@ -50,6 +51,8 @@
     <ClCompile Include="src\Lintel\TermRender\TRen.cpp">
       <Filter>Lintel\TermRender</Filter>
     </ClCompile>
-    <ClCompile Include="src\Lintel\TermRender\TSprite.cpp" />
+    <ClCompile Include="src\Lintel\TermRender\TSprite.cpp">
+      <Filter>Lintel\TermRender</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

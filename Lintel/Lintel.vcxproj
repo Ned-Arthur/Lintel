@@ -19,13 +19,13 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
@@ -41,18 +41,16 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)..\bin\Debug-windows-x86_64\Lintel\</OutDir>
     <IntDir>$(ProjectDir)..\bin-int\Debug-windows-x86_64\Lintel\</IntDir>
     <TargetName>Lintel</TargetName>
-    <TargetExt>.dll</TargetExt>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\bin\Release-windows-x86_64\Lintel\</OutDir>
     <IntDir>$(ProjectDir)..\bin-int\Release-windows-x86_64\Lintel\</IntDir>
     <TargetName>Lintel</TargetName>
-    <TargetExt>.dll</TargetExt>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -69,11 +67,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ImportLibrary>..\bin\Debug-windows-x86_64\Lintel\Lintel.lib</ImportLibrary>
     </Link>
-    <PostBuildEvent>
-      <Command>IF EXIST ..\bin\Debug-windows-x86_64\Lintel\Lintel.dll\ (xcopy /Q /E /Y /I ..\bin\Debug-windows-x86_64\Lintel\Lintel.dll ..\bin\Debug-windows-x86_64\Sandbox &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Debug-windows-x86_64\Lintel\Lintel.dll ..\bin\Debug-windows-x86_64\Sandbox &gt; nul)</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -94,23 +88,18 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <ImportLibrary>..\bin\Release-windows-x86_64\Lintel\Lintel.lib</ImportLibrary>
     </Link>
-    <PostBuildEvent>
-      <Command>IF EXIST ..\bin\Release-windows-x86_64\Lintel\Lintel.dll\ (xcopy /Q /E /Y /I ..\bin\Release-windows-x86_64\Lintel\Lintel.dll ..\bin\Release-windows-x86_64\Sandbox &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Release-windows-x86_64\Lintel\Lintel.dll ..\bin\Release-windows-x86_64\Sandbox &gt; nul)</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Lintel.h" />
     <ClInclude Include="src\Lintel\Application.h" />
-    <ClInclude Include="src\Lintel\Core.h" />
     <ClInclude Include="src\Lintel\EntryPoint.h" />
     <ClInclude Include="src\Lintel\Input.h" />
     <ClInclude Include="src\Lintel\LnTime.h" />
     <ClInclude Include="src\Lintel\Random.h" />
+    <ClInclude Include="src\Lintel\TermRender\TChar.h" />
     <ClInclude Include="src\Lintel\TermRender\TRen.h" />
     <ClInclude Include="src\Lintel\TermRender\TSprite.h" />
-    <ClInclude Include="src\Lintel\TermRender\TChar.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Lintel\Application.cpp" />

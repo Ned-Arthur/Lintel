@@ -1,10 +1,8 @@
 #pragma once
 
-#include "Core.h"
-
 namespace Lintel {
 
-	class LINTEL_API Application
+	class Application
 	{
 	public:
 		Application();

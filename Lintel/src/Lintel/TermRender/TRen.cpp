@@ -120,10 +120,9 @@ namespace Lintel {
 	#endif
 	}
 
-	// Call this every frame to check events I guess
+	// Call this every frame to check window events I guess
 	void TRen::update(int* gameW, int* gameH)
 	{
-
 		// Handle (console) window events
 		DWORD numEvents = 0;
 		DWORD numEventsRead = 0;
@@ -211,8 +210,11 @@ namespace Lintel {
 
 	void TRen::drawChar(TChar sourceChar, int x, int y)
 	{
-		if (x >= width || y >= height)
+		if (x >= width || y >= height || x < 0 || y < 0)
+		{
+			//exit(99);	// If we're trying to 'optimise' drawing we can crash on using this
 			return;
+		}
 
 		drawCharUnsafe(sourceChar, x, y);
 	}
@@ -239,30 +241,25 @@ namespace Lintel {
 		// Check the bounds first so we can avoid bounds-checking every char
 		int w = sprite.getWidth();
 		int h = sprite.getHeight();
+
+		int wStart = 0;
+		int hStart = 0;
+
+		// Pre-check all of our bounds so we can drawUnsafe
+		if (x < 0)
+			wStart -= x;
+		if (y < 0)
+			hStart -= y;
+		if (x + w > width)
+			w -= (x + w) - width;
+		if (y + h > height)
+			h -= (y + h) - height;
 		
-
-		bool isFullySafe = (x >= 0 && y >= 0 && x + w <= width && y + h <= height);
-		if (!isFullySafe)
+		for (int i = wStart; i < w; i++)
 		{
-			// Adjust the sprite bounds
-			// Right-bottom
-			w -= (w - width);
-			h -= (h - height);
-		}
-		isFullySafe = (x >= 0 && y >= 0 && x + w <= width && y + h <= height);
-
-		for (int i = 0; i < w; i++)
-		{
-			for (int j = 0; j < h; j++)
+			for (int j = hStart; j < h; j++)
 			{
-				if (isFullySafe)
-				{
-					drawCharUnsafe(sprite.getCharAtPosition(i, j), x + i, y + j);
-				}
-				else
-				{
-					//drawChar(sprite.getCharAtPosition(i, j), x + i, y + j);
-				}
+				drawCharUnsafe(sprite.getCharAtPosition(i, j), x + i, y + j);
 			}
 		}
 	}
