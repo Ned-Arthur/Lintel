@@ -4,6 +4,8 @@
 
 #include <cstdio>
 
+#include <iostream>
+
 // Platform specific implementations are better suited to the source I think;
 // none of this is needed by users
 
@@ -94,6 +96,13 @@ namespace Lintel {
 	}
 	TRen::~TRen()
 	{
+		// Free all the memory for our TThing s
+		for (auto const& i : things)
+		{
+			delete i;
+		}
+		things.clear();
+
 	#ifdef LN_PLATFORM_WINDOWS
 		delete[] screenBuffer;
 		
@@ -101,6 +110,34 @@ namespace Lintel {
 		SetConsoleCursorInfo(wHnd, &oldCI);
 	#endif
 	}
+
+	void TRen::setupThings()
+	{
+		for (auto const& thing : things)
+		{
+			thing->genericSetup();
+		}
+
+		for (auto const& thing : things)
+		{
+			thing->LateSetup();
+		}
+	}
+
+	TThing* TRen::getThingByName(std::string name)
+	{
+		for (auto const& thing : things)
+		{
+			if (thing->name == name)
+			{
+				return thing;
+			}
+		}
+		return nullptr;
+	}
+
+	int TRen::getWidth() { return width; }
+	int TRen::getHeight() { return height; }
 
 	void TRen::getConsoleSize(int* columns, int* rows)
 	{
@@ -121,7 +158,7 @@ namespace Lintel {
 	}
 
 	// Call this every frame to check window events I guess
-	void TRen::update(int* gameW, int* gameH)
+	void TRen::update()
 	{
 		// Handle (console) window events
 		DWORD numEvents = 0;
@@ -149,9 +186,6 @@ namespace Lintel {
 					break;
 				case WINDOW_BUFFER_SIZE_EVENT:
 					COORD newSize = eventBuffer[i].Event.WindowBufferSizeEvent.dwSize;
-					// Tell the game what size it's running at
-					*gameW = newSize.X;
-					*gameH = newSize.Y;
 					// Update all our variables to store & draw at the right sizes
 					resize(newSize.X, newSize.Y);
 				}
@@ -180,6 +214,13 @@ namespace Lintel {
 
 	void TRen::redraw()
 	{
+		// Update all our TThings
+		for (auto const& i : things)
+		{
+			i->Update();
+			i->Draw();
+		}
+		
 		// Draw the character buffer to the console
 	#ifdef LN_PLATFORM_WINDOWS
 		// Use ANSI method so we don't have to deal with conversion bs and can
@@ -191,8 +232,9 @@ namespace Lintel {
 			coordBufCoord,
 			&srctWriteRect);
 	#endif
- 	}
+	}
 
+	// Drawing methods
 	void TRen::flushBuffer(TChar blankChar)
 	{
 		// In theory we just translate our TChar to the platform-appropriate type
@@ -208,24 +250,12 @@ namespace Lintel {
 		}
 	}
 
-	void TRen::drawChar(TChar sourceChar, int x, int y)
-	{
-		if (x >= width || y >= height || x < 0 || y < 0)
-		{
-			//exit(99);	// If we're trying to 'optimise' drawing we can crash on using this
-			return;
-		}
-
-		drawCharUnsafe(sourceChar, x, y);
-	}
-
 	void TRen::drawMsg(const char* msg, TChar temp, int x, int y)
 	{
 		for (int i = 0; i < strlen(msg); i++)
 		{
-			TChar c = temp;
-			c.c = msg[i];
-			drawChar(c, x + i, y);
+			temp.c = msg[i];
+			drawChar(temp, x + i, y);
 		}
 	}
 	void TRen::drawMsg(const char* msg, TermColour fgColour, TermColour bgColour, int x, int y)
@@ -264,6 +294,16 @@ namespace Lintel {
 		}
 	}
 
+	void TRen::drawChar(TChar sourceChar, int x, int y)
+	{
+		if (x >= width || y >= height || x < 0 || y < 0)
+		{
+			//exit(99);	// If we're trying to 'optimise' drawing we can crash on using this
+			return;
+		}
+
+		drawCharUnsafe(sourceChar, x, y);
+	}
 	void TRen::drawCharUnsafe(TChar sourceChar, int x, int y)
 	{
 #ifdef LN_PLATFORM_WINDOWS

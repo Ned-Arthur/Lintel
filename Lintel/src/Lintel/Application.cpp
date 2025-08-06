@@ -24,6 +24,7 @@ namespace Lintel {
 			Update();
 		}
 	}
+
 	void Application::Quit()
 	{
 		isRunning = false;	// Drawing a sprite manually makes this not work :'(

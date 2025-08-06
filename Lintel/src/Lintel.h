@@ -14,6 +14,8 @@
 #include "Lintel/TermRender/TRen.h"
 #include "Lintel/TermRender/TChar.h"
 #include "Lintel/TermRender/TSprite.h"
+#include "Lintel/TermRender/TThing.h"
+#include "Lintel/TermRender/TVec.h"
 /////////////////////////////////////////
 
 ////////////// Entry Point //////////////

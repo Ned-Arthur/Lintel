@@ -7,7 +7,6 @@ namespace Lintel {
 	std::chrono::steady_clock::time_point Time::startTime = std::chrono::steady_clock::now();
 	std::chrono::steady_clock::time_point Time::lastTime = std::chrono::steady_clock::now();
 
-
 	void Time::Update()
 	{
 		auto currentTime = std::chrono::steady_clock::now();
