@@ -105,6 +105,9 @@
       <Project>{0D6ED1C0-F90F-FC96-E2CA-0FEBCE0B83E7}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\grass.spt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -91,7 +91,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\Lintel\EntitySystem\I_Thing.h" />
     <ClInclude Include="src\Lintel.h" />
     <ClInclude Include="src\Lintel\Application.h" />
     <ClInclude Include="src\Lintel\EntryPoint.h" />
@@ -103,7 +102,6 @@
     <ClInclude Include="src\Lintel\TermRender\TSprite.h" />
     <ClInclude Include="src\Lintel\TermRender\TThing.h" />
     <ClInclude Include="src\Lintel\TermRender\TVec.h" />
-    <ClInclude Include="src\Lintel\EntitySystem\ThingManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Lintel\Application.cpp" />
@@ -113,7 +111,6 @@
     <ClCompile Include="src\Lintel\TermRender\TRen.cpp" />
     <ClCompile Include="src\Lintel\TermRender\TSprite.cpp" />
     <ClCompile Include="src\Lintel\TermRender\TThing.cpp" />
-    <ClCompile Include="src\Lintel\EntitySystem\ThingManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

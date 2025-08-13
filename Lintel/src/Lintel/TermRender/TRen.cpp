@@ -2,10 +2,6 @@
 
 #include "Input.h"
 
-#include <cstdio>
-
-#include <iostream>
-
 // Platform specific implementations are better suited to the source I think;
 // none of this is needed by users
 
@@ -49,9 +45,6 @@ constexpr int TCTransBG_Win[16] = {
 	BACKGROUND_INTENSITY | BACKGROUND_GREEN | BACKGROUND_BLUE,
 	BACKGROUND_INTENSITY | BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE,
 };
-
-
-
 #endif
 
 namespace Lintel {
@@ -111,6 +104,8 @@ namespace Lintel {
 	#endif
 	}
 
+
+/*********** Entity System ***********/
 	void TRen::setupThings()
 	{
 		for (auto const& thing : things)
@@ -123,7 +118,6 @@ namespace Lintel {
 			thing->LateSetup();
 		}
 	}
-
 	TThing* TRen::getThingByName(std::string name)
 	{
 		for (auto const& thing : things)
@@ -136,9 +130,7 @@ namespace Lintel {
 		return nullptr;
 	}
 
-	int TRen::getWidth() { return width; }
-	int TRen::getHeight() { return height; }
-
+/*********** Static Methods ***********/
 	void TRen::getConsoleSize(int* columns, int* rows)
 	{
 	#ifdef LN_PLATFORM_WINDOWS
@@ -149,6 +141,7 @@ namespace Lintel {
 	#endif
 	}
 
+/*********** Setup ***********/
 	void TRen::setTitle(const char* termTitle)
 	{
 	#ifdef LN_PLATFORM_WINDOWS
@@ -157,7 +150,20 @@ namespace Lintel {
 	#endif
 	}
 
-	// Call this every frame to check window events I guess
+	void TRen::setBG(TChar bgChar)
+	{
+		backgroundChar = bgChar;
+		usingSprite = false;
+	}
+
+	void TRen::setBGSprite(std::string spritePath)
+	{
+		backgroundSprite.loadSprite(spritePath.c_str());
+		usingSprite = true;
+	}
+
+
+/*********** Compulsory Loop Methods ***********/
 	void TRen::update()
 	{
 		// Handle (console) window events
@@ -195,32 +201,42 @@ namespace Lintel {
 		}
 	}
 
-	void TRen::resize(int w, int h)
-	{
-		width = w;
-		height = h;
-
-	#ifdef LN_PLATFORM_WINDOWS
-		delete screenBuffer;
-		screenBuffer = new CHAR_INFO[width * height];
-
-		coordBufSize.Y = height;
-		coordBufSize.X = width;
-
-		srctWriteRect.Bottom = height;
-		srctWriteRect.Right = width;
-	#endif
-	}
-
 	void TRen::redraw()
 	{
-		// Update all our TThings
-		for (auto const& i : things)
+		// Clear the background
+		if (usingSprite)
 		{
-			i->Update();
-			i->Draw();
+			// integer division floors, but we'd rather draw extra background outside
+			// the window over blank edges
+			int repeatX = width / backgroundSprite.getWidth() + 1;
+			int repeatY = height / backgroundSprite.getHeight() + 1;
+
+			for (int i = 0; i < repeatX; i++)
+			{
+				for (int j = 0; j < repeatY; j++)
+				{
+					drawSprite(backgroundSprite,
+						i * backgroundSprite.getWidth(),
+						j * backgroundSprite.getHeight()
+					);
+				}
+			}
 		}
-		
+		else
+		{
+			flushBuffer(backgroundChar);
+		}
+
+		// Update all our TThings
+		for (auto const& thing : things)
+		{
+			thing->Update();
+		}
+		for (auto const& thing : things)
+		{
+			thing->Draw();
+		}
+
 		// Draw the character buffer to the console
 	#ifdef LN_PLATFORM_WINDOWS
 		// Use ANSI method so we don't have to deal with conversion bs and can
@@ -234,7 +250,7 @@ namespace Lintel {
 	#endif
 	}
 
-	// Drawing methods
+/*********** Drawing Methods ***********/
 	void TRen::flushBuffer(TChar blankChar)
 	{
 		// In theory we just translate our TChar to the platform-appropriate type
@@ -311,5 +327,23 @@ namespace Lintel {
 #endif
 
 		screenBuffer[y * width + x] = c;
+	}
+
+/*********** Private Control ***********/
+	void TRen::resize(int w, int h)
+	{
+		width = w;
+		height = h;
+
+#ifdef LN_PLATFORM_WINDOWS
+		delete screenBuffer;
+		screenBuffer = new CHAR_INFO[width * height];
+
+		coordBufSize.Y = height;
+		coordBufSize.X = width;
+
+		srctWriteRect.Bottom = height;
+		srctWriteRect.Right = width;
+#endif
 	}
 }

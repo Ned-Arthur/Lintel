@@ -14,4 +14,7 @@
   <ItemGroup>
     <ClCompile Include="src\SandboxApp.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\grass.spt" />
+  </ItemGroup>
 </Project>

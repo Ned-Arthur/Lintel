@@ -24,30 +24,25 @@ namespace Lintel {
 		// Entity system (should this be here? probably not)
 		std::list<TThing*> things;
 		void setupThings();
-
-		template <typename T>
-			requires std::derived_from<T, TThing>
-		void createThing(std::string name);
-		
-		template <typename T>
-			requires std::derived_from<T, TThing>
-		void createThing();
-
+		template <typename T> void createThing(std::string name);
+		template <typename T> void createThing();
 		TThing* getThingByName(std::string name);
 
-		int getWidth();
-		int getHeight();
 
 		// Static methods
 		static void getConsoleSize(int* x, int* y);
 
 		// Setup methods
 		void setTitle(const char* termTitle);
+		void setBG(TChar bgChar);
+		void setBGSprite(std::string spritePath);
 
 		// Non-drawing loop methods
 		void update();
-		void resize(int w, int h);
 		void redraw();
+
+		int getWidth() { return width; }
+		int getHeight() { return height; }
 
 		// Drawing methods
 		void flushBuffer(TChar blankChar);
@@ -58,9 +53,18 @@ namespace Lintel {
 
 	private:
 		void drawCharUnsafe(TChar sourceChar, int x, int y);
+		
+		// Doesn't actually resize the window, but the virtual drawing space
+		// The user should use this, because it will just act weird and not
+		// actually "resize" the window
+		void resize(int w, int h);
 
 		int width;
 		int height;
+
+		bool usingSprite;
+		TChar backgroundChar;
+		TSprite backgroundSprite;
 
 		// Platform specific implementation data
 	#ifdef LN_PLATFORM_WINDOWS
@@ -76,7 +80,6 @@ namespace Lintel {
 
 
 	template<typename T>
-		requires std::derived_from<T, TThing>
 	inline void TRen::createThing(std::string name)
 	{
 		T* newThing = new T(this, name);
@@ -85,7 +88,6 @@ namespace Lintel {
 	}
 
 	template<typename T>
-		requires std::derived_from<T, TThing>
 	inline void TRen::createThing()
 	{
 		T* newThing = new T(this, "");

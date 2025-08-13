@@ -11,6 +11,7 @@ public:
 	void Setup() override
 	{
 		ren.setTitle("Sandbox Game");
+		ren.setBGSprite("assets/grass.spt");
 
 		// Create Things
 		// These will be rendered bottom-to-top
@@ -25,10 +26,6 @@ public:
 		ren.update();	// Deal with events (keypress, resize)
 		
 		if (Lintel::Input::getKeyState(Lintel::K_ESCAPE).currentState) Quit();
-		
-		// Draw a background
-		Lintel::TChar flushChar(' ', Lintel::WHITE, Lintel::WHITE);
-		ren.flushBuffer(flushChar);
 
 		ren.redraw();
 	}
