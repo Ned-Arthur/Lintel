@@ -17,11 +17,13 @@ namespace Lintel {
 	{
 		Lintel::Random::initialise();
 
-		Setup();
 		while (isRunning)
 		{
 			Lintel::Time::Update();
-			Update();
+
+			termRenderer->update();
+			if (termRenderer->wantsToQuit) Quit();
+			termRenderer->redraw();
 		}
 	}
 
@@ -29,5 +31,11 @@ namespace Lintel {
 	{
 		isRunning = false;	// Drawing a sprite manually makes this not work :'(
 		exit(0);			// Really really quit
+	}
+
+	void Application::registerTRen(TRen* _termRenderer)
+	{
+		termRenderer = _termRenderer;
+		termRenderer->setupThings();
 	}
 }

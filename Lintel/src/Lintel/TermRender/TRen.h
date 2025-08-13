@@ -21,6 +21,8 @@ namespace Lintel {
 		TRen();
 		~TRen();
 
+		bool wantsToQuit = false;
+
 		// Entity system (should this be here? probably not)
 		std::list<TThing*> things;
 		void setupThings();
@@ -28,6 +30,7 @@ namespace Lintel {
 		template <typename T> void createThing();
 		TThing* getThingByName(std::string name);
 
+		void QuitApp();
 
 		// Static methods
 		static void getConsoleSize(int* x, int* y);
@@ -62,13 +65,16 @@ namespace Lintel {
 		int width;
 		int height;
 
+		TChar* screenBuffer;
+
+
 		bool usingSprite;
 		TChar backgroundChar;
 		TSprite backgroundSprite;
 
 		// Platform specific implementation data
 	#ifdef LN_PLATFORM_WINDOWS
-		CHAR_INFO* screenBuffer;
+		CHAR_INFO* screenBufferOld;
 		HANDLE wHnd;				// Handle for window writing
 		HANDLE rHnd;				// Handle for window reading
 		SMALL_RECT srctWriteRect;

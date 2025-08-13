@@ -22,6 +22,9 @@ public:
 
 	void Update() override
 	{
+		if (Lintel::Input::getKeyState(Lintel::K_ESCAPE).currentState)
+			renderer->QuitApp();
+		
 		if (Lintel::Input::getKeyState('A').currentState)
 		{
 			pos.x -= (speed * Lintel::Time::deltaTime);

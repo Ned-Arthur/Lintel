@@ -3,35 +3,20 @@
 #include "Things/Player.h"
 #include "Things/Horse.h"
 
-class Sandbox : public Lintel::Application
+int main(int argc, char** argv)
 {
-public:
 	Lintel::TRen ren;
+	ren.setTitle("Sandbox Game");
+	ren.setBGSprite("assets/grass.spt");
 
-	void Setup() override
-	{
-		ren.setTitle("Sandbox Game");
-		ren.setBGSprite("assets/grass.spt");
+	// Create TThings
+	// These will be rendered bottom-to-top
+	ren.createThing<Horse>("Horse");
+	ren.createThing<Player>("Player");
 
-		// Create Things
-		// These will be rendered bottom-to-top
-		ren.createThing<Horse>("Horse");
-		ren.createThing<Player>("Player");
+	Lintel::Application app;
+	app.registerTRen(&ren);
 
-		ren.setupThings();
-	}
-
-	void Update() override
-	{
-		ren.update();	// Deal with events (keypress, resize)
-		
-		if (Lintel::Input::getKeyState(Lintel::K_ESCAPE).currentState) Quit();
-
-		ren.redraw();
-	}
-};
-
-Lintel::Application* Lintel::CreateApplication()
-{
-	return new Sandbox();
+	app.Run();
 }
+

@@ -63,7 +63,7 @@ namespace Lintel {
 	#ifdef LN_PLATFORM_WINDOWS
 		getConsoleSize(&width, &height);
 
-		screenBuffer = new CHAR_INFO[width * height];
+		screenBufferOld = new CHAR_INFO[width * height];
 
 		wHnd = GetStdHandle(STD_OUTPUT_HANDLE);
 		rHnd = GetStdHandle(STD_INPUT_HANDLE);
@@ -97,7 +97,7 @@ namespace Lintel {
 		things.clear();
 
 	#ifdef LN_PLATFORM_WINDOWS
-		delete[] screenBuffer;
+		delete[] screenBufferOld;
 		
 		//TODO tidy up the console
 		SetConsoleCursorInfo(wHnd, &oldCI);
@@ -130,7 +130,13 @@ namespace Lintel {
 		return nullptr;
 	}
 
-/*********** Static Methods ***********/
+	void TRen::QuitApp()
+	{
+		wantsToQuit = true;
+	}
+	
+	
+	/*********** Static Methods ***********/
 	void TRen::getConsoleSize(int* columns, int* rows)
 	{
 	#ifdef LN_PLATFORM_WINDOWS
@@ -243,7 +249,7 @@ namespace Lintel {
 		// just use ASCII/ANSI chars in App and maintain cross-platform-ness
 		WriteConsoleOutputA(
 			wHnd,
-			screenBuffer,
+			screenBufferOld,
 			coordBufSize,
 			coordBufCoord,
 			&srctWriteRect);
@@ -262,7 +268,7 @@ namespace Lintel {
 		
 		for (int i = 0; i < width * height; i++)
 		{
-			screenBuffer[i] = c;
+			screenBufferOld[i] = c;
 		}
 	}
 
@@ -326,7 +332,7 @@ namespace Lintel {
 		CHAR_INFO c = sourceChar.Translate_Win();
 #endif
 
-		screenBuffer[y * width + x] = c;
+		screenBufferOld[y * width + x] = c;
 	}
 
 /*********** Private Control ***********/
@@ -336,8 +342,8 @@ namespace Lintel {
 		height = h;
 
 #ifdef LN_PLATFORM_WINDOWS
-		delete screenBuffer;
-		screenBuffer = new CHAR_INFO[width * height];
+		delete screenBufferOld;
+		screenBufferOld = new CHAR_INFO[width * height];
 
 		coordBufSize.Y = height;
 		coordBufSize.X = width;

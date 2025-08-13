@@ -2,7 +2,6 @@
 
 #ifdef LN_PLATFORM_WINDOWS
 
-extern Lintel::Application* Lintel::CreateApplication();
 
 int main(int argc, char** argv)
 {

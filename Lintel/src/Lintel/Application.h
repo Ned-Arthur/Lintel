@@ -1,5 +1,7 @@
 #pragma once
 
+#include "TermRender/TRen.h"
+
 namespace Lintel {
 
 	class Application
@@ -8,17 +10,16 @@ namespace Lintel {
 		Application();
 		virtual ~Application();
 
+		/* Operation Methods */
 		void Run();
 		void Quit();
 
-		virtual void Setup() = 0;
-		virtual void Update() = 0;
+		/* Renderer Methods */
+		void registerTRen(TRen* _termRenderer);
 
 	private:
 		bool isRunning;
+
+		TRen* termRenderer;
 	};
-
-	// To be defined in CLIENT
-	Application* CreateApplication();
-
 }
