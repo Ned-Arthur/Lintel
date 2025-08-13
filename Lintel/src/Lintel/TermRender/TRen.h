@@ -67,14 +67,13 @@ namespace Lintel {
 
 		TChar* screenBuffer;
 
-
 		bool usingSprite;
 		TChar backgroundChar;
 		TSprite backgroundSprite;
 
 		// Platform specific implementation data
 	#ifdef LN_PLATFORM_WINDOWS
-		CHAR_INFO* screenBufferOld;
+		//CHAR_INFO* screenBufferOld;
 		HANDLE wHnd;				// Handle for window writing
 		HANDLE rHnd;				// Handle for window reading
 		SMALL_RECT srctWriteRect;

@@ -23,7 +23,7 @@ namespace Lintel {
 		I_YELLOW,
 		I_MAGENTA,
 		I_CYAN,
-		I_WHITE
+		I_WHITE,
 	};
 
 	struct TChar

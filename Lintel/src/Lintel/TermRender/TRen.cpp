@@ -60,10 +60,11 @@ namespace Lintel {
 
 	TRen::TRen()
 	{
-	#ifdef LN_PLATFORM_WINDOWS
 		getConsoleSize(&width, &height);
+		screenBuffer = new TChar[width * height];
 
-		screenBufferOld = new CHAR_INFO[width * height];
+	#ifdef LN_PLATFORM_WINDOWS
+		//screenBufferOld = new CHAR_INFO[width * height];
 
 		wHnd = GetStdHandle(STD_OUTPUT_HANDLE);
 		rHnd = GetStdHandle(STD_INPUT_HANDLE);
@@ -79,7 +80,6 @@ namespace Lintel {
 		srctWriteRect.Bottom = height;
 		srctWriteRect.Right = width;
 
-		
 		GetConsoleCursorInfo(wHnd, &oldCI);
 		CONSOLE_CURSOR_INFO ci = oldCI;
 		ci.bVisible = FALSE;
@@ -96,14 +96,15 @@ namespace Lintel {
 		}
 		things.clear();
 
+		delete[] screenBuffer;
+
 	#ifdef LN_PLATFORM_WINDOWS
-		delete[] screenBufferOld;
-		
+		//delete[] screenBufferOld;
+
 		//TODO tidy up the console
 		SetConsoleCursorInfo(wHnd, &oldCI);
 	#endif
 	}
-
 
 /*********** Entity System ***********/
 	void TRen::setupThings()
@@ -136,7 +137,7 @@ namespace Lintel {
 	}
 	
 	
-	/*********** Static Methods ***********/
+/*********** Static Methods ***********/
 	void TRen::getConsoleSize(int* columns, int* rows)
 	{
 	#ifdef LN_PLATFORM_WINDOWS
@@ -245,11 +246,18 @@ namespace Lintel {
 
 		// Draw the character buffer to the console
 	#ifdef LN_PLATFORM_WINDOWS
+		// Translate the platform-independent buffer to something windows understands
+		CHAR_INFO* win_screenBuffer = new CHAR_INFO[width * height];
+		for (int i = 0; i < width * height; i++)
+		{
+			win_screenBuffer[i] = screenBuffer[i].Translate_Win();
+		}
+		
 		// Use ANSI method so we don't have to deal with conversion bs and can
 		// just use ASCII/ANSI chars in App and maintain cross-platform-ness
 		WriteConsoleOutputA(
 			wHnd,
-			screenBufferOld,
+			win_screenBuffer,
 			coordBufSize,
 			coordBufCoord,
 			&srctWriteRect);
@@ -259,16 +267,9 @@ namespace Lintel {
 /*********** Drawing Methods ***********/
 	void TRen::flushBuffer(TChar blankChar)
 	{
-		// In theory we just translate our TChar to the platform-appropriate type
-		// and call it `c` in the ifdef block. We'll see if this pans out when
-		// adding more platforms
-	#ifdef LN_PLATFORM_WINDOWS
-		CHAR_INFO c = blankChar.Translate_Win();
-	#endif
-		
 		for (int i = 0; i < width * height; i++)
 		{
-			screenBufferOld[i] = c;
+			screenBuffer[i] = blankChar;
 		}
 	}
 
@@ -328,11 +329,7 @@ namespace Lintel {
 	}
 	void TRen::drawCharUnsafe(TChar sourceChar, int x, int y)
 	{
-#ifdef LN_PLATFORM_WINDOWS
-		CHAR_INFO c = sourceChar.Translate_Win();
-#endif
-
-		screenBufferOld[y * width + x] = c;
+		screenBuffer[y * width + x] = sourceChar;
 	}
 
 /*********** Private Control ***********/
@@ -341,9 +338,12 @@ namespace Lintel {
 		width = w;
 		height = h;
 
+		delete[] screenBuffer;
+		screenBuffer = new TChar[width * height];
+
 #ifdef LN_PLATFORM_WINDOWS
-		delete screenBufferOld;
-		screenBufferOld = new CHAR_INFO[width * height];
+		//delete[] screenBufferOld;
+		//screenBufferOld = new CHAR_INFO[width * height];
 
 		coordBufSize.Y = height;
 		coordBufSize.X = width;
