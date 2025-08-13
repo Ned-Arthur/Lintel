@@ -311,7 +311,10 @@ namespace Lintel {
 		{
 			for (int j = hStart; j < h; j++)
 			{
-				drawCharUnsafe(sprite.getCharAtPosition(i, j), x + i, y + j);
+				// Get the char we're about to draw over
+				TChar underneath = screenBuffer[x + y * width];
+
+				drawCharUnsafe(sprite.getCharAtPosition(i, j, underneath), x + i, y + j);
 			}
 		}
 	}

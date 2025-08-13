@@ -36,7 +36,8 @@ namespace Lintel {
 		{"I_YELLOW", I_YELLOW},
 		{"I_MAGENTA", I_MAGENTA},
 		{"I_CYAN", I_CYAN},
-		{"I_WHITE", I_WHITE}
+		{"I_WHITE", I_WHITE},
+		{"TRANSPARENT", TRANSPARENT}
 	};
 
 	void TSprite::loadSprite(const char* filepath)
@@ -56,7 +57,8 @@ namespace Lintel {
 			// Using just two colours ('mono'chrome)
 			if (buffer.substr(0, 4) == "MONO")
 			{
-				char fgColStr[10], bgColStr[10];
+				// These buffers must be sized [longest colour name + 1]
+				char fgColStr[12], bgColStr[12];
 				sscanf(buffer.c_str(), "MONO: %s %s", fgColStr, bgColStr);
 				
 				fg = strToTC[fgColStr];
@@ -88,11 +90,19 @@ namespace Lintel {
 		spriteFile.close();
 	}
 
-	TChar TSprite::getCharAtPosition(int x, int y)
+	TChar TSprite::getCharAtPosition(int x, int y, TChar underneath)
 	{
 		// Guard bad reads and return an error char
 		if (x > width || y > height) return TChar(0x9d, I_RED, I_WHITE);
-		return spriteData[x + y * width];
+		TChar c = spriteData[x + y * width];
+		
+		// Handle transparent colours
+		if (c.fg_col == TRANSPARENT)
+			c.fg_col = underneath.fg_col;
+		if (c.bg_col == TRANSPARENT)
+			c.bg_col = underneath.bg_col;
+
+		return c;
 	}
 	
 	int TSprite::getWidth()

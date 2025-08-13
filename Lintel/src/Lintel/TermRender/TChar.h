@@ -1,6 +1,9 @@
 #pragma once
 
 #include <windows.h>
+// windows.h defines this as 1, but we don't need it. I'll see me around when
+// this inevitably breaks everything
+#undef TRANSPARENT
 
 namespace Lintel {
 
@@ -24,6 +27,8 @@ namespace Lintel {
 		I_MAGENTA,
 		I_CYAN,
 		I_WHITE,
+
+		TRANSPARENT		// Take the colour from the char underneath this
 	};
 
 	struct TChar
