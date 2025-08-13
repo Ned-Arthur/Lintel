@@ -64,7 +64,7 @@ namespace Lintel {
 		screenBuffer = new TChar[width * height];
 
 	#ifdef LN_PLATFORM_WINDOWS
-		//screenBufferOld = new CHAR_INFO[width * height];
+		win_screenBuffer = new CHAR_INFO[width * height];
 
 		wHnd = GetStdHandle(STD_OUTPUT_HANDLE);
 		rHnd = GetStdHandle(STD_INPUT_HANDLE);
@@ -99,7 +99,7 @@ namespace Lintel {
 		delete[] screenBuffer;
 
 	#ifdef LN_PLATFORM_WINDOWS
-		//delete[] screenBufferOld;
+		delete[] win_screenBuffer;
 
 		//TODO tidy up the console
 		SetConsoleCursorInfo(wHnd, &oldCI);
@@ -247,7 +247,6 @@ namespace Lintel {
 		// Draw the character buffer to the console
 	#ifdef LN_PLATFORM_WINDOWS
 		// Translate the platform-independent buffer to something windows understands
-		CHAR_INFO* win_screenBuffer = new CHAR_INFO[width * height];
 		for (int i = 0; i < width * height; i++)
 		{
 			win_screenBuffer[i] = screenBuffer[i].Translate_Win();
@@ -342,8 +341,8 @@ namespace Lintel {
 		screenBuffer = new TChar[width * height];
 
 #ifdef LN_PLATFORM_WINDOWS
-		//delete[] screenBufferOld;
-		//screenBufferOld = new CHAR_INFO[width * height];
+		delete[] win_screenBuffer;
+		win_screenBuffer = new CHAR_INFO[width * height];
 
 		coordBufSize.Y = height;
 		coordBufSize.X = width;

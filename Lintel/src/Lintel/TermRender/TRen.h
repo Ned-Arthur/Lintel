@@ -73,7 +73,7 @@ namespace Lintel {
 
 		// Platform specific implementation data
 	#ifdef LN_PLATFORM_WINDOWS
-		//CHAR_INFO* screenBufferOld;
+		CHAR_INFO* win_screenBuffer;
 		HANDLE wHnd;				// Handle for window writing
 		HANDLE rHnd;				// Handle for window reading
 		SMALL_RECT srctWriteRect;

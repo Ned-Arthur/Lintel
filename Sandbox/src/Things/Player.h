@@ -11,6 +11,8 @@ public:
 
 	float speed = 10.0f;
 
+	
+
 	void Setup() override
 	{
 		spriteFilePath = "assets/demo.spt";
@@ -20,8 +22,18 @@ public:
 		name;
 	}
 
+	char txtbuf[30];
+	float maxfps = 0;
+
 	void Update() override
 	{
+		float fps = 1 / Lintel::Time::deltaTime;
+		if (fps > maxfps) maxfps = fps;
+		sprintf(txtbuf, "FPS: %4.4f", fps);
+		renderer->drawMsg(txtbuf, Lintel::BLACK, Lintel::GREEN, 60, 2);
+		sprintf(txtbuf, "Max FPS: %4.4f", maxfps);
+		renderer->drawMsg(txtbuf, Lintel::BLACK, Lintel::GREEN, 60, 3);
+		
 		if (Lintel::Input::getKeyState(Lintel::K_ESCAPE).currentState)
 			renderer->QuitApp();
 		
