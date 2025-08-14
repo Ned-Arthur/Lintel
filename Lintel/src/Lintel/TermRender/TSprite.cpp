@@ -100,7 +100,17 @@ namespace Lintel {
 		if (c.fg_col == TRANSPARENT)
 			c.fg_col = underneath.fg_col;
 		if (c.bg_col == TRANSPARENT)
-			c.bg_col = underneath.bg_col;
+		{
+			if (c.c == ' ')
+			{
+				// The background is transparent and there's no foreground
+				c = underneath;
+			}
+			else
+			{
+				c.bg_col = underneath.bg_col;
+			}
+		}
 
 		return c;
 	}

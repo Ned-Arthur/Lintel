@@ -3,7 +3,7 @@
 #include "Input.h"
 
 // Platform specific implementations are better suited to the source I think;
-// none of this is needed by users
+// none of this is needed by users or will be needed outside this file
 
 // Colour translation tables
 #ifdef LN_PLATFORM_WINDOWS
@@ -135,7 +135,7 @@ namespace Lintel {
 	{
 		wantsToQuit = true;
 	}
-	
+
 	
 /*********** Static Methods ***********/
 	void TRen::getConsoleSize(int* columns, int* rows)
@@ -147,6 +147,7 @@ namespace Lintel {
 		*rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
 	#endif
 	}
+
 
 /*********** Setup ***********/
 	void TRen::setTitle(const char* termTitle)
@@ -171,8 +172,9 @@ namespace Lintel {
 
 
 /*********** Compulsory Loop Methods ***********/
-	void TRen::update()
+	void TRen::GatherInput()
 	{
+	#ifdef LN_PLATFORM_WINDOWS
 		// Handle (console) window events
 		DWORD numEvents = 0;
 		DWORD numEventsRead = 0;
@@ -189,8 +191,8 @@ namespace Lintel {
 				case KEY_EVENT:
 					switch (eventBuffer[i].Event.KeyEvent.wVirtualKeyCode) {
 					case VK_ESCAPE:
-						Input::setKeyState(K_ESCAPE, true);
-						
+						Input::setKeyState(K_ESCAPE, eventBuffer[i].Event.KeyEvent.bKeyDown);
+
 						break;
 					}
 
@@ -206,9 +208,10 @@ namespace Lintel {
 
 			delete[] eventBuffer;
 		}
+	#endif
 	}
 
-	void TRen::redraw()
+	void TRen::UpdateAndDraw()
 	{
 		// Clear the background
 		if (usingSprite)
@@ -263,6 +266,7 @@ namespace Lintel {
 	#endif
 	}
 
+
 /*********** Drawing Methods ***********/
 	void TRen::flushBuffer(TChar blankChar)
 	{
@@ -312,7 +316,7 @@ namespace Lintel {
 			for (int j = hStart; j < h; j++)
 			{
 				// Get the char we're about to draw over
-				TChar underneath = screenBuffer[x + y * width];
+				TChar underneath = screenBuffer[(x + i) + (y + j) * width];
 
 				drawCharUnsafe(sprite.getCharAtPosition(i, j, underneath), x + i, y + j);
 			}

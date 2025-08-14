@@ -8,8 +8,8 @@ namespace Lintel {
 	};
 	
 	struct KeyState {
-		bool prevState;
 		bool currentState;
+		bool justPressed;
 	};
 	
 	class Input
@@ -19,6 +19,8 @@ namespace Lintel {
 		static void setKeyState(char letter, bool newState);
 		static KeyState getKeyState(Key key);
 		static KeyState getKeyState(char key);
+
+		static void Update();
 
 	private:
 		static std::unordered_map<Key, KeyState> keyData;

@@ -3,23 +3,24 @@
 #include <cctype>
 
 namespace Lintel {
+	// Create the static members
 	std::unordered_map<Key, KeyState> Input::keyData;
 	std::unordered_map<char, KeyState> Input::letterData;
 	
 	void Input::setKeyState(Key key, bool newState)
 	{
-		keyData[key].prevState = keyData[key].currentState;
+		if (keyData[key].currentState == false && newState == true)
+			keyData[key].justPressed = true;
+
 		keyData[key].currentState = newState;
 	}
 	void Input::setKeyState(char letter, bool newState)
 	{
-		/*
-		Key processedKey = (Key)(K_a + (tolower(letter) - 'a'));	// We ball
-		//if (processedKey < 0 || processedKey > K_z) return;	// Ball a little less
-		setKeyState(processedKey, newState);
-		*/
 		letter = toupper(letter);
-		letterData[letter].prevState = letterData[letter].currentState;
+
+		if (letterData[letter].currentState == false && newState == true)
+			letterData[letter].justPressed = true;
+
 		letterData[letter].currentState = newState;
 	}
 
@@ -30,5 +31,26 @@ namespace Lintel {
 	KeyState Input::getKeyState(char key)
 	{
 		return letterData[key];
+	}
+
+	void Input::Update()
+	{
+		// Update the state of justPressed the frame after it's set
+		
+		for (auto k = keyData.begin(); k != keyData.end(); ++k)
+		{
+			if (k->second.justPressed == true)
+			{
+				k->second.justPressed = false;
+			}
+		}
+
+		for (auto l = letterData.begin(); l != letterData.end(); ++l)
+		{
+			if (l->second.justPressed == true)
+			{
+				l->second.justPressed = false;
+			}
+		}
 	}
 }

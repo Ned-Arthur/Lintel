@@ -13,17 +13,17 @@ public:
 
 	void Setup() override
 	{
-		spriteFilePath = "assets/demo.spt";
-		pos = { 20.0f, 10.0f };
+		spriteFilePath = "assets/human.spt";
+		pos = { 0.0f, 0.0f };
 		spriteCenter = { 1, 1 };
-
-		name;
 	}
 
 	void Update() override
 	{
 		if (Lintel::Input::getKeyState(Lintel::K_ESCAPE).currentState)
+		{
 			renderer->QuitApp();
+		}
 		
 		if (Lintel::Input::getKeyState('A').currentState)
 		{

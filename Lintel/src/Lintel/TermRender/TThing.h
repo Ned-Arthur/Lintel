@@ -30,6 +30,9 @@ namespace Lintel {
 		TVec<int> spriteCenter;		// Position in sprite coordinates that pos represents in screen-space
 		bool visible = true;		// Do we draw the sprite?
 
+		// Initialise the position once, any extra calls will be ignored
+		void initPos(TVec<float> startPos);
+
 		const char* spriteFilePath;	// Which sprite to load after setup
 		TRen* renderer;				// Pointer to the renderer for sprite drawing
 
@@ -38,5 +41,7 @@ namespace Lintel {
 
 	private:
 		TSprite sprite;
+
+		bool posInitialised = false;
 	};
 }

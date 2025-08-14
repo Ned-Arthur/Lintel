@@ -4,6 +4,7 @@
 
 #include "Random.h"
 #include "LnTime.h"
+#include "Input.h"
 
 namespace Lintel {
 	Application::Application()
@@ -15,22 +16,27 @@ namespace Lintel {
 
 	void Application::Run()
 	{
-		Lintel::Random::initialise();
+		Random::initialise();
 
 		while (isRunning)
 		{
-			Lintel::Time::Update();
+			Time::Update();
+			Input::Update();
 
-			termRenderer->update();
-			if (termRenderer->wantsToQuit) Quit();
-			termRenderer->redraw();
+			if (termRenderer)
+			{
+				termRenderer->GatherInput();
+				if (termRenderer->wantsToQuit) Quit();
+				termRenderer->UpdateAndDraw();
+			}
+			
 		}
 	}
 
 	void Application::Quit()
 	{
-		isRunning = false;	// Drawing a sprite manually makes this not work :'(
-		exit(0);			// Really really quit
+		// At one point this wouldn't work, but it's fine now...
+		isRunning = false;
 	}
 
 	void Application::registerTRen(TRen* _termRenderer)

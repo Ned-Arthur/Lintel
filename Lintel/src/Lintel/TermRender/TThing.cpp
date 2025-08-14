@@ -14,6 +14,15 @@ namespace Lintel {
 		sprite.loadSprite(spriteFilePath);
 	}
 
+	void TThing::initPos(TVec<float> startPos)
+	{
+		if (!posInitialised)
+		{
+			pos = startPos;
+			posInitialised = true;
+		}
+	}
+
 	void TThing::Draw()
 	{
 		if (visible)

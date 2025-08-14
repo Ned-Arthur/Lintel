@@ -25,9 +25,9 @@ namespace Lintel {
 
 		// Entity system (should this be here? probably not)
 		std::list<TThing*> things;
+		template <typename T> T* createThing(std::string name);
+		template <typename T> T* createThing();
 		void setupThings();
-		template <typename T> void createThing(std::string name);
-		template <typename T> void createThing();
 		TThing* getThingByName(std::string name);
 
 		void QuitApp();
@@ -41,8 +41,8 @@ namespace Lintel {
 		void setBGSprite(std::string spritePath);
 
 		// Non-drawing loop methods
-		void update();
-		void redraw();
+		void GatherInput();
+		void UpdateAndDraw();
 
 		int getWidth() { return width; }
 		int getHeight() { return height; }
@@ -85,18 +85,18 @@ namespace Lintel {
 
 
 	template<typename T>
-	inline void TRen::createThing(std::string name)
+	inline T* TRen::createThing(std::string name)
 	{
 		T* newThing = new T(this, name);
 		things.push_back(newThing);
-		//newThing->genericSetup();
+		return newThing;
 	}
 
 	template<typename T>
-	inline void TRen::createThing()
+	inline T* TRen::createThing()
 	{
 		T* newThing = new T(this, "");
 		things.push_back(newThing);
-		//newThing->genericSetup();
+		return newThing;
 	}
 }
