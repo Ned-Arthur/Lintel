@@ -38,8 +38,7 @@
       <Filter>Lintel\TermRender</Filter>
     </ClInclude>
     <ClInclude Include="src\Lintel\TermRender\TVec.h" />
-    <ClInclude Include="src\Lintel\EntitySystem\ThingManager.h" />
-    <ClInclude Include="src\Lintel\EntitySystem\I_Thing.h" />
+    <ClInclude Include="src\Lintel\TermRender\Things\Prop.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Lintel\Application.cpp">
@@ -63,6 +62,5 @@
     <ClCompile Include="src\Lintel\TermRender\TThing.cpp">
       <Filter>Lintel\TermRender</Filter>
     </ClCompile>
-    <ClCompile Include="src\Lintel\EntitySystem\ThingManager.cpp" />
   </ItemGroup>
 </Project>

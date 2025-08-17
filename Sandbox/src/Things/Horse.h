@@ -1,16 +1,12 @@
 #pragma once
 #include <Lintel.h>
 
-#include "Player.h"
-
-#include <iostream>
-
 class Horse : public Lintel::TThing
 {
 public:
 	using Lintel::TThing::TThing;
 
-	Player* p;
+	Lintel::TThing* rider = nullptr;
 
 	bool beingRidden = false;
 	float speedBonus = 2.f;
@@ -18,39 +14,27 @@ public:
 	void Setup()
 	{
 		spriteFilePath = "assets/horse.spt";
-		initPos({ 40.0f, 10.0f });
+		initPos({ 40.0f, 5.0f });
 		
 		spriteCenter = { 1, 1 };
-
-		p = dynamic_cast<Player*>(renderer->getThingByName("Player"));
 	}
 
 	void Update()
 	{
-		if (beingRidden)
+		if (rider)
 		{
-			pos.x = p->pos.x;
-			pos.y = p->pos.y + 1;
+			pos.x = rider->pos.x;
+			pos.y = rider->pos.y + 1;
 		}
+	}
 
-		if (Lintel::Input::getKeyState('F').justPressed &&
-			pos.dxTo(p->pos) < 4 && pos.dyTo(p->pos) < 3)
-		{
-			if (!beingRidden)
-			{
-				p->speed *= speedBonus;
-				beingRidden = true;
-			}
-			else
-			{
-				p->speed /= speedBonus;
-				beingRidden = false;
-			}
-		}
+	void Ride(TThing* _p)
+	{
+		rider = _p;
+	}
 
-		if (Lintel::Input::getKeyState('K').justPressed)
-		{
-			// Kill this horse
-		}
+	void UnRide()
+	{
+		rider = nullptr;
 	}
 };

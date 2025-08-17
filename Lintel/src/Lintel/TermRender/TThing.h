@@ -4,14 +4,23 @@
 #include "TVec.h"
 
 #include <string>
+#include <vector>
+#include <unordered_set>
 
 namespace Lintel {
 	class TRen;
 
+	enum EdgeDirection {
+		LEFT,
+		TOP,
+		RIGHT,
+		BOTTOM,
+	};
+
 	class TThing
 	{
 	public:
-		TThing(TRen* _renderer, std::string _name);
+		TThing(TRen* _renderer, std::string _name, std::unordered_set<std::string> _tags);
 
 		/* Overridable functions for app - space control */
 		void genericSetup();
@@ -25,23 +34,36 @@ namespace Lintel {
 		virtual void Update() = 0;
 		
 		/* Pseudo - protected members, but need to access from other Things */
-		std::string name;			// Identification for other Things
-		TVec<float> pos;			// Position on the screen
-		TVec<int> spriteCenter;		// Position in sprite coordinates that pos represents in screen-space
-		bool visible = true;		// Do we draw the sprite?
+		std::string name;						// Unique identification for other Things
+		std::unordered_set<std::string> tags;	// Generic ID shared among many Things
+		TVec<float> pos = { 0,0 };				// Position on the screen
+		TVec<int> spriteCenter = { 0,0 };		// Position in sprite coordinates that pos represents in screen-space
+		bool visible = true;					// Do we draw the sprite?
 
 		// Initialise the position once, any extra calls will be ignored
 		void initPos(TVec<float> startPos);
+		void initSpriteFP(const char* filePath);
 
-		const char* spriteFilePath;	// Which sprite to load after setup
-		TRen* renderer;				// Pointer to the renderer for sprite drawing
+		void QueueDelete();
+		bool MarkedForDeletion();
+
+		/* Helper functions for intersections etc. */
+		bool isIntersecting(TThing* other);
+		int getBound(EdgeDirection dir);
+		bool moveByAndCollideWith(float dx, float dy, std::string solidTag, bool collideWithScreenEdges=false);
+
+		TSprite* Sprite();
+
+		const char* spriteFilePath = "NONE";	// Which sprite to load after setup
+		TRen* renderer;							// Pointer to the renderer for sprite drawing
 
 		// This is only called by the engine
 		void Draw();
 
 	private:
 		TSprite sprite;
-
 		bool posInitialised = false;
+		bool spriteInitialised = false;
+		bool shouldDelete = false;
 	};
 }

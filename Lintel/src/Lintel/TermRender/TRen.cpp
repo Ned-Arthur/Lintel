@@ -118,6 +118,8 @@ namespace Lintel {
 		{
 			thing->LateSetup();
 		}
+
+		isSetup = true;
 	}
 	TThing* TRen::getThingByName(std::string name)
 	{
@@ -129,6 +131,20 @@ namespace Lintel {
 			}
 		}
 		return nullptr;
+	}
+	std::vector<TThing*> TRen::getThingsWithTag(std::string tag)
+	{
+		std::vector<TThing*> foundThings;
+		
+		for (auto const& thing : things)
+		{
+			if (thing->tags.contains(tag))
+			{
+				foundThings.push_back(thing);
+			}
+		}
+
+		return foundThings;
 	}
 
 	void TRen::QuitApp()
@@ -237,11 +253,23 @@ namespace Lintel {
 			flushBuffer(backgroundChar);
 		}
 
-		// Update all our TThings
-		for (auto const& thing : things)
+		// Update all our TThings and delete those we don't need
+		std::list<TThing*>::iterator iter = things.begin();
+
+		while (iter != things.end())
 		{
-			thing->Update();
+			(*iter)->Update();
+
+			if ((*iter)->MarkedForDeletion())
+			{
+				iter = things.erase(iter);
+			}
+			else
+			{
+				++iter;
+			}
 		}
+
 		for (auto const& thing : things)
 		{
 			thing->Draw();

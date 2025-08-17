@@ -90,6 +90,15 @@ namespace Lintel {
 		spriteFile.close();
 	}
 
+	void TSprite::recolour(TermColour fg, TermColour bg)
+	{
+		for (int i = 0; i < width * height; i++)
+		{
+			spriteData[i].fg_col = fg;
+			spriteData[i].bg_col = bg;
+		}
+	}
+
 	TChar TSprite::getCharAtPosition(int x, int y, TChar underneath)
 	{
 		// Guard bad reads and return an error char

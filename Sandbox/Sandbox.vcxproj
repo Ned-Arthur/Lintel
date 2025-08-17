@@ -94,6 +94,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Things\Bullet.h" />
+    <ClInclude Include="src\Things\Enemy.h" />
     <ClInclude Include="src\Things\Horse.h" />
     <ClInclude Include="src\Things\Player.h" />
   </ItemGroup>
@@ -106,7 +108,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="assets\fence_horizontal.spt" />
+    <None Include="assets\fence_vertical.spt" />
     <None Include="assets\grass.spt" />
+    <None Include="assets\medRock.spt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

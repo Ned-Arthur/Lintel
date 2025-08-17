@@ -5,7 +5,8 @@
 #include "TThing.h"
 
 #include <list>
-#include <concepts>
+#include <vector>
+#include <unordered_set>
 #include <string>
 
 #include <windows.h>
@@ -25,10 +26,10 @@ namespace Lintel {
 
 		// Entity system (should this be here? probably not)
 		std::list<TThing*> things;
-		template <typename T> T* createThing(std::string name);
-		template <typename T> T* createThing();
+		template <typename T> T* createThing(std::string name = "", std::unordered_set<std::string> tags = {});
 		void setupThings();
 		TThing* getThingByName(std::string name);
+		std::vector<TThing*> getThingsWithTag(std::string tag);
 
 		void QuitApp();
 
@@ -71,6 +72,8 @@ namespace Lintel {
 		TChar backgroundChar;
 		TSprite backgroundSprite;
 
+		bool isSetup = false;
+
 		// Platform specific implementation data
 	#ifdef LN_PLATFORM_WINDOWS
 		CHAR_INFO* win_screenBuffer;
@@ -85,18 +88,17 @@ namespace Lintel {
 
 
 	template<typename T>
-	inline T* TRen::createThing(std::string name)
+	inline T* TRen::createThing(std::string name, std::unordered_set<std::string> tags)
 	{
-		T* newThing = new T(this, name);
+		T* newThing = new T(this, name, tags);
 		things.push_back(newThing);
-		return newThing;
-	}
 
-	template<typename T>
-	inline T* TRen::createThing()
-	{
-		T* newThing = new T(this, "");
-		things.push_back(newThing);
+		if (isSetup)
+		{
+			newThing->genericSetup();
+			newThing->LateSetup();
+		}
+
 		return newThing;
 	}
 }
