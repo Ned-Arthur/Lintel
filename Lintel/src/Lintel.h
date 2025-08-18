@@ -5,8 +5,8 @@
 #include "Lintel/Application.h"
 
 ///////////////// Tools /////////////////
-#include "Lintel/Input.h"
 #include "Lintel/LnTime.h"
+#include "Lintel/Input.h"
 #include "Lintel/Random.h"
 /////////////////////////////////////////
 

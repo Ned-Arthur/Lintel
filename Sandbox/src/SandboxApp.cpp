@@ -9,7 +9,8 @@ int main(int argc, char** argv)
 {
 	Lintel::TRen ren;
 	ren.setTitle("Sandbox Game");
-	ren.setBGSprite("assets/grass.spt");
+	//ren.setBGSprite("assets/grass.spt");
+	ren.setBG(Lintel::TChar(' ', Lintel::MAGENTA, Lintel::MAGENTA));
 
 	// Create TThings
 	// These will be rendered bottom-to-top
@@ -26,7 +27,7 @@ int main(int argc, char** argv)
 	CREATE_PROP(ren, "assets/fence_horizontal.spt", 20, 14);
 
 	Lintel::Application app;
-	app.registerTRen(&ren);
+	app.RegisterTRen(&ren);
 
 	app.Run();
 }

@@ -7,41 +7,32 @@
 #include "Input.h"
 
 namespace Lintel {
-	Application::Application()
-		: isRunning(true)
-	{}
-
-	Application::~Application()
-	{}
-
 	void Application::Run()
 	{
 		Random::initialise();
 
-		while (isRunning)
+		while (m_Running)
 		{
 			Time::Update();
 			Input::Update();
 
-			if (termRenderer)
+			if (m_TerminalRenderer)
 			{
-				termRenderer->GatherInput();
-				if (termRenderer->wantsToQuit) Quit();
-				termRenderer->UpdateAndDraw();
+				m_TerminalRenderer->GatherInput();
+				if (m_TerminalRenderer->wantsToQuit) Quit();
+				m_TerminalRenderer->UpdateAndDraw();
 			}
-			
 		}
 	}
 
 	void Application::Quit()
 	{
-		// At one point this wouldn't work, but it's fine now...
-		isRunning = false;
+		m_Running = false;
 	}
 
-	void Application::registerTRen(TRen* _termRenderer)
+	void Application::RegisterTRen(TRen* newTerminalRenderer)
 	{
-		termRenderer = _termRenderer;
-		termRenderer->setupThings();
+		m_TerminalRenderer = newTerminalRenderer;
+		m_TerminalRenderer->setupThings();
 	}
 }

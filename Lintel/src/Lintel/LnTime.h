@@ -16,5 +16,4 @@ namespace Lintel {
 		static std::chrono::steady_clock::time_point startTime;
 		static std::chrono::steady_clock::time_point lastTime;
 	};
-
 }
