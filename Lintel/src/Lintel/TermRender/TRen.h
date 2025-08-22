@@ -4,12 +4,7 @@
 #include "TSprite.h"
 #include "TThing.h"
 
-#include <list>
-#include <vector>
-#include <unordered_set>
-#include <string>
-
-#include <windows.h>
+#include "lnpch.h"
 
 namespace Lintel {
 	class Application;

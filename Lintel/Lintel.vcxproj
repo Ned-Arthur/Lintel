@@ -54,7 +54,8 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>lnpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>LN_PLATFORM_WINDOWS;LN_BUILD_DLL;LN_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;src\Lintel;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -71,7 +72,8 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>lnpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>LN_PLATFORM_WINDOWS;LN_BUILD_DLL;LN_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;src\Lintel;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -97,11 +99,12 @@
     <ClInclude Include="src\Lintel\LnTime.h" />
     <ClInclude Include="src\Lintel\Random.h" />
     <ClInclude Include="src\Lintel\TermRender\TChar.h" />
-    <ClInclude Include="src\Lintel\TermRender\Things\Prop.h" />
     <ClInclude Include="src\Lintel\TermRender\TRen.h" />
     <ClInclude Include="src\Lintel\TermRender\TSprite.h" />
     <ClInclude Include="src\Lintel\TermRender\TThing.h" />
     <ClInclude Include="src\Lintel\TermRender\TVec.h" />
+    <ClInclude Include="src\Lintel\TermRender\Things\Prop.h" />
+    <ClInclude Include="src\lnpch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Lintel\Application.cpp" />
@@ -111,6 +114,9 @@
     <ClCompile Include="src\Lintel\TermRender\TRen.cpp" />
     <ClCompile Include="src\Lintel\TermRender\TSprite.cpp" />
     <ClCompile Include="src\Lintel\TermRender\TThing.cpp" />
+    <ClCompile Include="src\lnpch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

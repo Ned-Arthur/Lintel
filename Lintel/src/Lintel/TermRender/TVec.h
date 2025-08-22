@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cmath>
+#include "lnpch.h"
 
 template <typename T>
 struct TVec {

@@ -1,8 +1,5 @@
+#include "lnpch.h"
 #include "TSprite.h"
-
-#include <string>
-#include <fstream>
-#include <unordered_map>
 
 namespace Lintel {
 	void TSprite::SetSpriteFromString(const char* spriteText, uint16_t spriteWidth, uint16_t spriteHeight,

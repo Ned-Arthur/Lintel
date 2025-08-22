@@ -3,9 +3,7 @@
 #include "TSprite.h"
 #include "TVec.h"
 
-#include <string>
-#include <vector>
-#include <unordered_set>
+#include "lnpch.h"
 
 namespace Lintel {
 	class TRen;

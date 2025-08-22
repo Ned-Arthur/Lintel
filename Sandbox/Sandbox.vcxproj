@@ -65,7 +65,6 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
-      <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -106,12 +105,6 @@
     <ProjectReference Include="..\Lintel\Lintel.vcxproj">
       <Project>{0D6ED1C0-F90F-FC96-E2CA-0FEBCE0B83E7}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="assets\fence_horizontal.spt" />
-    <None Include="assets\fence_vertical.spt" />
-    <None Include="assets\grass.spt" />
-    <None Include="assets\medRock.spt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

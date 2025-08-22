@@ -1,7 +1,5 @@
+#include "lnpch.h"
 #include "Random.h"
-
-#include <cstdlib>
-#include <ctime>
 
 namespace Lintel {
 	void Random::Initialise()

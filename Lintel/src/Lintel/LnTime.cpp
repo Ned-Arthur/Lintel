@@ -1,3 +1,4 @@
+#include "lnpch.h"
 #include "LnTime.h"
 
 namespace Lintel {

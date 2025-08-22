@@ -1,7 +1,8 @@
 #pragma once
 
-#include <stdint.h>
 #include "TChar.h"
+
+#include "lnpch.h"
 
 namespace Lintel {
 
@@ -22,5 +23,4 @@ namespace Lintel {
 
 		TChar* m_SpriteData;
 	};
-
 }

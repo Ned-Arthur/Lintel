@@ -1,6 +1,5 @@
+#include "lnpch.h"
 #include "Input.h"
-
-#include <cctype>
 
 namespace Lintel {
 	// Create the static members

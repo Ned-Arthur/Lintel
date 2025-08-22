@@ -1,7 +1,8 @@
 #pragma once
 
-#include <vector>
 #include "Application.h"
+
+#include "lnpch.h"
 
 namespace Lintel {
 

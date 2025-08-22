@@ -7,6 +7,9 @@
     <Filter Include="Lintel\TermRender">
       <UniqueIdentifier>{7448C791-E05E-C527-29D6-5049952B96AF}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Lintel\TermRender\Things">
+      <UniqueIdentifier>{10A4126B-FCC8-61EB-2514-477B11986009}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Lintel.h" />
@@ -34,8 +37,13 @@
     <ClInclude Include="src\Lintel\TermRender\TThing.h">
       <Filter>Lintel\TermRender</Filter>
     </ClInclude>
-    <ClInclude Include="src\Lintel\TermRender\TVec.h" />
-    <ClInclude Include="src\Lintel\TermRender\Things\Prop.h" />
+    <ClInclude Include="src\Lintel\TermRender\TVec.h">
+      <Filter>Lintel\TermRender</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Lintel\TermRender\Things\Prop.h">
+      <Filter>Lintel\TermRender\Things</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lnpch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Lintel\Application.cpp">
@@ -59,5 +67,6 @@
     <ClCompile Include="src\Lintel\TermRender\TThing.cpp">
       <Filter>Lintel\TermRender</Filter>
     </ClCompile>
+    <ClCompile Include="src\lnpch.cpp" />
   </ItemGroup>
 </Project>

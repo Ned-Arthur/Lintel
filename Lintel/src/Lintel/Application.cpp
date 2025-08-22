@@ -1,6 +1,5 @@
+#include "lnpch.h"
 #include "Application.h"
-
-#include <chrono>
 
 #include "Random.h"
 #include "LnTime.h"

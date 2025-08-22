@@ -4,8 +4,7 @@
 #include <ctime>
 #include <cctype>
 #include <cmath>
-
-#include <stdint.h>
+#include <cstdint>
 
 #include <chrono>
 
