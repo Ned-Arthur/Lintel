@@ -14,11 +14,16 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 project "Lintel"
 	location "Lintel"
-	kind "SharedLib"
+	kind "StaticLib"
 	language "C++"
+	cppdialect "C++20"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+	pchheader "lnpch.h"
+	pchsource "Lintel/src/lnpch.cpp"
 
 	files
 	{
@@ -29,12 +34,12 @@ project "Lintel"
 	-- Libraries used by the engine, should remain empty
 	includedirs
 	{
-		"%{prj.name}/src"
+		"%{prj.name}/src",
+		"%{prj.name}/src/Lintel",
 	}
 
 ----- PLATFORMS -----
 	filter "system:windows"
-		cppdialect "C++17"
 		staticruntime "On"
 		systemversion "latest"
 
@@ -44,24 +49,24 @@ project "Lintel"
 			"LN_BUILD_DLL"
 		}
 
-		postbuildcommands
-		{
-			("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Sandbox")
-		}
-
 ----- CONFIGURATIONS -----
 	filter "configurations:Debug"
 		defines "LN_DEBUG"
-		symbols "On"
+		symbols "on"
 
 	filter "configurations:Release"
 		defines "LN_RELEASE"
-		optimize "On"
+		optimize "on"
+
+
+---------- Game Project ----------
 
 project "Sandbox"
 	location "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
+	cppdialect "C++20"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -85,7 +90,6 @@ project "Sandbox"
 
 ----- PLATFORMS -----
 	filter "system:windows"
-		cppdialect "C++17"
 		staticruntime "On"
 		systemversion "latest"
 
@@ -97,8 +101,8 @@ project "Sandbox"
 ----- CONFIGURATIONS -----
 	filter "configurations:Debug"
 		defines "LN_DEBUG"
-		symbols "On"
+		symbols "on"
 
 	filter "configurations:Release"
 		defines "LN_RELEASE"
-		optimize "On"
+		optimize "on"

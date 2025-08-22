@@ -1,22 +1,22 @@
 #pragma once
 
-#include "Core.h"
+#include "TermRender/TRen.h"
 
 namespace Lintel {
 
-	class LINTEL_API Application
+	class Application
 	{
 	public:
-		Application();
-		virtual ~Application();
-
+		/* Operation Methods */
 		void Run();
 
-		virtual void Setup() = 0;
-		virtual void Update() = 0;
+		/* Renderer Methods */
+		void RegisterTRen(TRen* newTerminalRenderer);
+
+	private:
+		void Quit();
+		bool m_Running = true;
+
+		TRen* m_TerminalRenderer = nullptr;
 	};
-
-	// To be defined in CLIENT
-	Application* CreateApplication();
-
 }
