@@ -16,6 +16,6 @@
 #include "Lintel/TermRender/TSprite.h"
 #include "Lintel/TermRender/TThing.h"
 #include "Lintel/TermRender/TVec.h"
-//// Builtin Things ////
+//// Builtin TThings ////
 #include "Lintel/TermRender/Things/Prop.h"
 /////////////////////////////////////////

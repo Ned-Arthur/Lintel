@@ -3,62 +3,66 @@
 #include "TRen.h"
 
 namespace Lintel {
-	TThing::TThing(TRen* _renderer, std::string _name, std::unordered_set<std::string> _tags)
-		: renderer(_renderer), name(_name), tags(_tags)
+	TThing::TThing(TRen* renderer, std::string name, std::unordered_set<std::string> tags)
+		: Renderer(renderer), m_Name(name), m_Tags(tags)
 	{}
 
-	void TThing::genericSetup()
+	void TThing::InitPosition(TVec<float> startPos)
 	{
-		Setup();
-
-		if (spriteFilePath != "NONE")
+		if (!m_PositionInitialised)
 		{
-			sprite.loadSprite(spriteFilePath);
+			Position = startPos;
+			m_PositionInitialised = true;
 		}
 	}
 
-	void TThing::initPos(TVec<float> startPos)
+	void TThing::InitSprite(const char* filePath)
 	{
-		if (!posInitialised)
+		if (!m_SpriteInitialised)
 		{
-			pos = startPos;
-			posInitialised = true;
+			m_Sprite.SetSpriteFromFile(filePath);
+			m_SpriteInitialised = true;
 		}
 	}
 
-	void TThing::initSpriteFP(const char* filePath)
+	void TThing::InitSpriteCenter(TVec<int> _spriteCenter)
 	{
-		if (!spriteInitialised)
+		if (!m_SpriteCenterInitialised)
 		{
-			spriteFilePath = filePath;
-			spriteInitialised = true;
+			m_SpriteCenter = _spriteCenter;
+			m_SpriteCenterInitialised = true;
 		}
+	}
+
+	void TThing::SetVisibility(bool visibility)
+	{
+		m_Visible = visibility;
 	}
 
 	void TThing::QueueDelete()
 	{
-		shouldDelete = true;
+		m_FlaggedForDeletion = true;
 	}
 
 	bool TThing::MarkedForDeletion()
 	{
-		return shouldDelete;
+		return m_FlaggedForDeletion;
 	}
 
 	// Basic rectangle intersection
-	bool TThing::isIntersecting(TThing* other)
+	bool TThing::IsIntersecting(TThing* other)
 	{
-		int totalSpriteWidth = getBound(RIGHT) - getBound(LEFT) + other->getBound(RIGHT) - other->getBound(LEFT);
-		int totalSpriteHeight = getBound(BOTTOM) - getBound(TOP) + other->getBound(BOTTOM) - other->getBound(TOP);
+		int totalSpriteWidth = GetBound(RIGHT) - GetBound(LEFT) + other->GetBound(RIGHT) - other->GetBound(LEFT);
+		int totalSpriteHeight = GetBound(BOTTOM) - GetBound(TOP) + other->GetBound(BOTTOM) - other->GetBound(TOP);
 
 		
 
-		int topMostChar = min(getBound(TOP), other->getBound(TOP));
-		int bottomMostChar = max(getBound(BOTTOM), other->getBound(BOTTOM));
+		int topMostChar = min(GetBound(TOP), other->GetBound(TOP));
+		int bottomMostChar = max(GetBound(BOTTOM), other->GetBound(BOTTOM));
 		int boundingRectHeight = bottomMostChar - topMostChar;
 
-		int leftMostChar = min(getBound(LEFT), other->getBound(LEFT));
-		int rightMostChar = max(getBound(RIGHT), other->getBound(RIGHT));
+		int leftMostChar = min(GetBound(LEFT), other->GetBound(LEFT));
+		int rightMostChar = max(GetBound(RIGHT), other->GetBound(RIGHT));
 		int boundingRectWidth = rightMostChar - leftMostChar;
 
 		if (boundingRectHeight < totalSpriteHeight && boundingRectWidth < totalSpriteWidth)
@@ -68,18 +72,18 @@ namespace Lintel {
 		return false;
 	}
 
-	int TThing::getBound(EdgeDirection dir)
+	int TThing::GetBound(EdgeDirection dir)
 	{
 		switch (dir)
 		{
 		case LEFT:
-			return pos.x - spriteCenter.x;
+			return Position.x - m_SpriteCenter.x;
 		case RIGHT:
-			return pos.x - spriteCenter.x + sprite.getWidth();
+			return Position.x - m_SpriteCenter.x + m_Sprite.GetWidth();
 		case TOP:
-			return pos.y - spriteCenter.y;
+			return Position.y - m_SpriteCenter.y;
 		case BOTTOM:
-			return pos.y - spriteCenter.y + sprite.getHeight();
+			return Position.y - m_SpriteCenter.y + m_Sprite.GetHeight();
 		}
 		
 		return -1;
@@ -87,61 +91,56 @@ namespace Lintel {
 
 	// Move by (dx, dy), colliding with / sliding along TThings with `solidTag` (and optionally screen edges)
 	// Returns whether a collision occured
-	bool TThing::moveByAndCollideWith(float dx, float dy, std::string solidTag, bool collideWithScreenEdges)
+	bool TThing::MoveByAndCollideWith(float dx, float dy, std::string solidTag, bool collideWithScreenEdges)
 	{
-		std::vector<TThing*> solidProps = renderer->getThingsWithTag("solid");
+		std::vector<TThing*> solidProps = Renderer->GetThingsWithTag("solid");
 		
-		pos.x += dx;
+		Position.x += dx;
 		bool revertX = false;
 		for (TThing* p : solidProps)
 		{
 			if (p == this) continue;
-			if (isIntersecting(p))
+			if (IsIntersecting(p))
 			{
 				revertX = true;
 			}
 		}
-		if (collideWithScreenEdges && (getBound(LEFT) < 0 || getBound(RIGHT) > renderer->getWidth()))
+		if (collideWithScreenEdges && (GetBound(LEFT) < 0 || GetBound(RIGHT) > Renderer->GetWidth()))
 		{
 			revertX = true;
 		}
 		if (revertX)
 		{
-			pos.x -= dx;
+			Position.x -= dx;
 		}
 
-		pos.y += dy;
+		Position.y += dy;
 		bool revertY = false;
 		for (TThing* p : solidProps)
 		{
 			if (p == this) continue;
-			if (isIntersecting(p))
+			if (IsIntersecting(p))
 			{
 				revertY = true;
 			}
 		}
-		if (collideWithScreenEdges && (getBound(TOP) < 0 || getBound(BOTTOM) > renderer->getHeight()))
+		if (collideWithScreenEdges && (GetBound(TOP) < 0 || GetBound(BOTTOM) > Renderer->GetHeight()))
 		{
 			revertY = true;
 		}
 		if (revertY)
 		{
-			pos.y -= dy;
+			Position.y -= dy;
 		}
 
 		return revertX || revertY;
 	}
 
-	TSprite* TThing::Sprite()
-	{
-		return &sprite;
-	}
-
 	void TThing::Draw()
 	{
-		if (visible)
+		if (m_Visible)
 		{
-			renderer->drawSprite(sprite, pos.x - spriteCenter.x, pos.y - spriteCenter.y);
+			Renderer->DrawSprite(m_Sprite, Position.x - m_SpriteCenter.x, Position.y - m_SpriteCenter.y);
 		}
 	}
 }

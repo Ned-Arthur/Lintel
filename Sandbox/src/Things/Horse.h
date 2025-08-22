@@ -11,20 +11,20 @@ public:
 	bool beingRidden = false;
 	float speedBonus = 2.f;
 
-	void Setup()
+	void Setup() override
 	{
-		spriteFilePath = "assets/horse.spt";
-		initPos({ 40.0f, 5.0f });
+		InitSprite("assets/horse.spt");
+		InitPosition({ 40.0f, 5.0f });
 		
-		spriteCenter = { 1, 1 };
+		InitSpriteCenter({ 1, 1 });
 	}
 
 	void Update()
 	{
 		if (rider)
 		{
-			pos.x = rider->pos.x;
-			pos.y = rider->pos.y + 1;
+			Position.x = rider->Position.x;
+			Position.y = rider->Position.y + 1;
 		}
 	}
 

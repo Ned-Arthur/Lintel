@@ -4,52 +4,52 @@
 
 namespace Lintel {
 	// Create the static members
-	std::unordered_map<Key, KeyState> Input::keyData;
-	std::unordered_map<char, KeyState> Input::letterData;
+	std::unordered_map<Key, KeyState> Input::m_KeyData;
+	std::unordered_map<char, KeyState> Input::m_LetterData;
 	
-	void Input::setKeyState(Key key, bool newState)
+	void Input::SetKeyState(Key key, bool newState)
 	{
-		if (keyData[key].currentState == false && newState == true)
-			keyData[key].justPressed = true;
+		if (m_KeyData[key].IsHeld == false && newState == true)
+			m_KeyData[key].JustPressed = true;
 
-		keyData[key].currentState = newState;
+		m_KeyData[key].IsHeld = newState;
 	}
-	void Input::setKeyState(char letter, bool newState)
+	void Input::SetKeyState(char letter, bool newState)
 	{
 		letter = toupper(letter);
 
-		if (letterData[letter].currentState == false && newState == true)
-			letterData[letter].justPressed = true;
+		if (m_LetterData[letter].IsHeld == false && newState == true)
+			m_LetterData[letter].JustPressed = true;
 
-		letterData[letter].currentState = newState;
+		m_LetterData[letter].IsHeld = newState;
 	}
 
-	KeyState Input::getKeyState(Key key)
+	KeyState Input::GetKeyState(Key key)
 	{
-		return keyData[key];
+		return m_KeyData[key];
 	}
-	KeyState Input::getKeyState(char key)
+	KeyState Input::GetKeyState(char key)
 	{
-		return letterData[key];
+		return m_LetterData[key];
 	}
 
 	void Input::Update()
 	{
 		// Update the state of justPressed the frame after it's set
 		
-		for (auto k = keyData.begin(); k != keyData.end(); ++k)
+		for (auto keyDataEntry = m_KeyData.begin(); keyDataEntry != m_KeyData.end(); ++keyDataEntry)
 		{
-			if (k->second.justPressed == true)
+			if (keyDataEntry->second.JustPressed == true)
 			{
-				k->second.justPressed = false;
+				keyDataEntry->second.JustPressed = false;
 			}
 		}
 
-		for (auto l = letterData.begin(); l != letterData.end(); ++l)
+		for (auto letterDataEntry = m_LetterData.begin(); letterDataEntry != m_LetterData.end(); ++letterDataEntry)
 		{
-			if (l->second.justPressed == true)
+			if (letterDataEntry->second.JustPressed == true)
 			{
-				l->second.justPressed = false;
+				letterDataEntry->second.JustPressed = false;
 			}
 		}
 	}

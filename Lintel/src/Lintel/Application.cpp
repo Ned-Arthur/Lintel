@@ -9,7 +9,7 @@
 namespace Lintel {
 	void Application::Run()
 	{
-		Random::initialise();
+		Random::Initialise();
 
 		while (m_Running)
 		{
@@ -19,20 +19,20 @@ namespace Lintel {
 			if (m_TerminalRenderer)
 			{
 				m_TerminalRenderer->GatherInput();
-				if (m_TerminalRenderer->wantsToQuit) Quit();
+				if (m_TerminalRenderer->WantsToQuit) Quit();
 				m_TerminalRenderer->UpdateAndDraw();
 			}
 		}
 	}
 
-	void Application::Quit()
-	{
-		m_Running = false;
-	}
-
 	void Application::RegisterTRen(TRen* newTerminalRenderer)
 	{
 		m_TerminalRenderer = newTerminalRenderer;
-		m_TerminalRenderer->setupThings();
+		m_TerminalRenderer->SetupThings();
+	}
+
+	void Application::Quit()
+	{
+		m_Running = false;
 	}
 }

@@ -9,12 +9,12 @@ namespace Lintel {
 	public:
 		/* Operation Methods */
 		void Run();
-		void Quit();
 
 		/* Renderer Methods */
 		void RegisterTRen(TRen* newTerminalRenderer);
 
 	private:
+		void Quit();
 		bool m_Running = true;
 
 		TRen* m_TerminalRenderer = nullptr;

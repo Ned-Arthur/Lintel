@@ -4,15 +4,15 @@
 #include <ctime>
 
 namespace Lintel {
-	void Random::initialise()
+	void Random::Initialise()
 	{
 		srand(time(0));
 	}
 
-	int Random::intRange(int lower, int upper)
+	int32_t Random::IntRange(int32_t lowerBound, int32_t upperBound)
 	{
-		int range = upper - lower;
-		int r = rand() % (range + 1);
-		return r + lower;
+		int32_t range = upperBound - lowerBound + 1;
+		int32_t randomNumber = rand() % range;
+		return lowerBound + randomNumber;
 	}
 }

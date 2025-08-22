@@ -13,9 +13,6 @@
     <ClInclude Include="src\Lintel\Application.h">
       <Filter>Lintel</Filter>
     </ClInclude>
-    <ClInclude Include="src\Lintel\EntryPoint.h">
-      <Filter>Lintel</Filter>
-    </ClInclude>
     <ClInclude Include="src\Lintel\Input.h">
       <Filter>Lintel</Filter>
     </ClInclude>

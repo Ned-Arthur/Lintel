@@ -18,14 +18,10 @@ public:
 
 	void Setup() override
 	{
-		initSpriteFP("assets/human.spt");
-		initPos({ 30, 3 });
-		spriteCenter = { 1, 1 };
-	}
-
-	void LateSetup()
-	{
-		Sprite()->recolour(Lintel::RED, Lintel::TRANSPARENT);
+		InitSprite("assets/human.spt");
+		Sprite()->RecolourFullSprite(Lintel::RED, Lintel::TRANSPARENT);
+		InitPosition({ 30, 3 });
+		InitSpriteCenter({ 1, 1 });
 	}
 
 	void Update()
@@ -33,7 +29,7 @@ public:
 		if (walkTime >= maxWalkTime)
 		{
 			// Pick a direction to walk in
-			direction = Lintel::Random::intRange(0, 3);
+			direction = Lintel::Random::IntRange(0, 3);
 			walkTime = 0;
 
 			
@@ -43,36 +39,36 @@ public:
 		switch (direction)
 		{
 		case 0:
-			dx += speed * Lintel::Time::deltaTime;
+			dx += speed * Lintel::Time::DeltaTime;
 			break;
 		case 1:
-			dy -= speed * Lintel::Time::deltaTime;
+			dy -= speed * Lintel::Time::DeltaTime;
 			break;
 		case 2:
-			dx -= speed * Lintel::Time::deltaTime;
+			dx -= speed * Lintel::Time::DeltaTime;
 			break;
 		case 3:
-			dy += speed * Lintel::Time::deltaTime;
+			dy += speed * Lintel::Time::DeltaTime;
 			break;
 		}
 
-		if (moveByAndCollideWith(dx, dy, "solid", true))
+		if (MoveByAndCollideWith(dx, dy, "solid", true))
 		{
 			walkTime = maxWalkTime;
 		}
 		else
 		{
-			walkTime += Lintel::Time::deltaTime;
+			walkTime += Lintel::Time::DeltaTime;
 		}
 
 		if (shootTime >= maxShootTime)
 		{
 			// Shoot in a different random direction
-			//renderer->createThing<EnemyBullet>()->init(pos, Lintel::Random::intRange(0, 7));
+			//Renderer->CreateThing<EnemyBullet>()->init(Position, Lintel::Random::intRange(0, 7));
 
 			shootTime = 0;
 		}
-		shootTime += Lintel::Time::deltaTime;
+		shootTime += Lintel::Time::DeltaTime;
 	}
 
 	void Hit(int damage)

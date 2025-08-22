@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdint.h>
 #include "TChar.h"
 
 namespace Lintel {
@@ -7,19 +8,19 @@ namespace Lintel {
 	class TSprite
 	{
 	public:
-		void setSpriteFromString(const char* spriteData, int w, int h, TermColour fg, TermColour bg);
-		void loadSprite(const char* filepath);
-		void recolour(TermColour fg, TermColour bg);
+		void SetSpriteFromString(const char* spriteData, uint16_t spriteWidth, uint16_t spriteHeight, TermColour foregroundColour, TermColour backgroundColour);
+		void SetSpriteFromFile(const char* filepath);
+		void RecolourFullSprite(TermColour foregroundColour, TermColour backgroundColour);
 
-		TChar getCharAtPosition(int x, int y, TChar underneath);
-		int getWidth();
-		int getHeight();
+		TChar GetCharacterAtPosition(uint16_t x, uint16_t y, TChar underneath);
+		uint16_t GetWidth();
+		uint16_t GetHeight();
 
 	private:
-		int width;
-		int height;
+		uint16_t m_Width;
+		uint16_t m_Height;
 
-		TChar* spriteData;
+		TChar* m_SpriteData;
 	};
 
 }

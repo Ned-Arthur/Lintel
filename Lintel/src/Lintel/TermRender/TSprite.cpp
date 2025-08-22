@@ -5,22 +5,23 @@
 #include <unordered_map>
 
 namespace Lintel {
-	void TSprite::setSpriteFromString(const char* spriteText, int w, int h, TermColour fg, TermColour bg)
+	void TSprite::SetSpriteFromString(const char* spriteText, uint16_t spriteWidth, uint16_t spriteHeight,
+										TermColour foregroundColour, TermColour backgroundColour)
 	{
-		width = w;
-		height = h;
-		spriteData = new TChar[width * height];
+		m_Width = spriteWidth;
+		m_Height = spriteHeight;
+		m_SpriteData = new TChar[m_Width * m_Height];
 		
-		for (int i = 0; i < width; i++)
+		for (size_t columnIndex = 0; columnIndex < m_Width; columnIndex++)
 		{
-			for (int j = 0; j < height; j++)
+			for (size_t rowIndex = 0; rowIndex < m_Height; rowIndex++)
 			{
-				spriteData[i + j * width] = TChar(spriteText[i + j * width], fg, bg);
+				m_SpriteData[columnIndex + rowIndex * m_Width] = TChar(spriteText[columnIndex + rowIndex * m_Width], foregroundColour, backgroundColour);
 			}
 		}
 	}
 
-	std::unordered_map<std::string, TermColour> strToTC = {
+	std::unordered_map<std::string, TermColour> stringToTermColour = {
 		{"BLACK", BLACK},
 		{"RED", RED},
 		{"GREEN", GREEN},
@@ -40,29 +41,29 @@ namespace Lintel {
 		{"TRANSPARENT", TRANSPARENT}
 	};
 
-	void TSprite::loadSprite(const char* filepath)
+	void TSprite::SetSpriteFromFile(const char* filepath)
 	{
-		int row = 0;
-		TermColour fg, bg;
+		uint16_t spriteRowIndex = 0;
+		TermColour foregroundColour, backgroundColour;
 		
 		// Process the file by-line
-		std::string buffer;
+		std::string lineBuffer;
 		std::ifstream spriteFile(filepath);
-		while (std::getline(spriteFile, buffer))
+		while (std::getline(spriteFile, lineBuffer))
 		{
 			// Skip over boilerplate lines
-			if (buffer == "LINTEL-SPRITE" || buffer.empty())
+			if (lineBuffer == "LINTEL-SPRITE" || lineBuffer.empty())
 				continue;
 
 			// Using just two colours ('mono'chrome)
-			if (buffer.substr(0, 4) == "MONO")
+			if (lineBuffer.substr(0, 4) == "MONO")
 			{
 				// These buffers must be sized [longest colour name + 1]
-				char fgColStr[12], bgColStr[12];
-				sscanf(buffer.c_str(), "MONO: %s %s", fgColStr, bgColStr);
+				char foregroundColourBuffer[12], backgroundColourBuffer[12];
+				sscanf(lineBuffer.c_str(), "MONO: %s %s", foregroundColourBuffer, backgroundColourBuffer);
 				
-				fg = strToTC[fgColStr];
-				bg = strToTC[bgColStr];
+				foregroundColour = stringToTermColour[foregroundColourBuffer];
+				backgroundColour = stringToTermColour[backgroundColourBuffer];
 				
 				continue;
 			}
@@ -70,66 +71,66 @@ namespace Lintel {
 			// If the user declares multiple SIZE attributes they'll cause a memory leak
 			// by declaring new arrays for each one then losing the pointer.
 			// Sucks to be them
-			if (buffer.substr(0, 4) == "SIZE")
+			if (lineBuffer.substr(0, 4) == "SIZE")
 			{
-				sscanf(buffer.c_str(), "SIZE: %d %d", &width, &height);
-				spriteData = new TChar[width * height];
+				sscanf(lineBuffer.c_str(), "SIZE: %d %d", &m_Width, &m_Height);
+				m_SpriteData = new TChar[m_Width * m_Height];
 				continue;
 			}
 
 			// If we get here we're handling sprite data
-			for (int i = 0; i < width; i++)
+			for (int i = 0; i < m_Width; i++)
 			{
-				spriteData[i + row * width] = TChar(buffer[i], fg, bg);
+				m_SpriteData[i + spriteRowIndex * m_Width] = TChar(lineBuffer[i], foregroundColour, backgroundColour);
 			}
 
-			row++;
+			spriteRowIndex++;
 		}
 
 		// Clean up
 		spriteFile.close();
 	}
 
-	void TSprite::recolour(TermColour fg, TermColour bg)
+	void TSprite::RecolourFullSprite(TermColour foregroundColour, TermColour backgroundColour)
 	{
-		for (int i = 0; i < width * height; i++)
+		for (int i = 0; i < m_Width * m_Height; i++)
 		{
-			spriteData[i].fg_col = fg;
-			spriteData[i].bg_col = bg;
+			m_SpriteData[i].ForegroundColour = foregroundColour;
+			m_SpriteData[i].BackgroundColour = backgroundColour;
 		}
 	}
 
-	TChar TSprite::getCharAtPosition(int x, int y, TChar underneath)
+	TChar TSprite::GetCharacterAtPosition(uint16_t x, uint16_t y, TChar underneath)
 	{
 		// Guard bad reads and return an error char
-		if (x > width || y > height) return TChar(0x9d, I_RED, I_WHITE);
-		TChar c = spriteData[x + y * width];
+		if (x > m_Width || y > m_Height) return TChar(0x9d, I_RED, I_WHITE);
+		TChar characterData = m_SpriteData[x + y * m_Width];
 		
 		// Handle transparent colours
-		if (c.fg_col == TRANSPARENT)
-			c.fg_col = underneath.fg_col;
-		if (c.bg_col == TRANSPARENT)
+		if (characterData.ForegroundColour == TRANSPARENT)
+			characterData.ForegroundColour = underneath.ForegroundColour;
+		if (characterData.BackgroundColour == TRANSPARENT)
 		{
-			if (c.c == ' ')
+			if (characterData.Character == ' ')
 			{
 				// The background is transparent and there's no foreground
-				c = underneath;
+				characterData = underneath;
 			}
 			else
 			{
-				c.bg_col = underneath.bg_col;
+				characterData.BackgroundColour = underneath.BackgroundColour;
 			}
 		}
 
-		return c;
+		return characterData;
 	}
 	
-	int TSprite::getWidth()
+	uint16_t TSprite::GetWidth()
 	{
-		return width;
+		return m_Width;
 	}
-	int TSprite::getHeight()
+	uint16_t TSprite::GetHeight()
 	{
-		return height;
+		return m_Height;
 	}
 }

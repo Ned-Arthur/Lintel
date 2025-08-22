@@ -8,16 +8,15 @@
 int main(int argc, char** argv)
 {
 	Lintel::TRen ren;
-	ren.setTitle("Sandbox Game");
-	//ren.setBGSprite("assets/grass.spt");
-	ren.setBG(Lintel::TChar(' ', Lintel::MAGENTA, Lintel::MAGENTA));
+	ren.SetTitle("Sandbox Game");
+	ren.SetBackgroundSprite("assets/grass.spt");
 
 	// Create TThings
 	// These will be rendered bottom-to-top
-	ren.createThing<Horse>("MyHorse", { "horse" })->initPos({ 8, 5 });
-	ren.createThing<Player>("Player", {"solid"});
+	ren.CreateThing<Horse>("MyHorse", { "horse" })->InitPosition({ 8, 5 });
+	ren.CreateThing<Player>("Player", {"solid"});
 
-	ren.createThing<Enemy>("E1", { "solid", "shootable" });
+	ren.CreateThing<Enemy>("E1", { "solid", "shootable" });
 
 	CREATE_PROP(ren, "assets/medRock.spt", 60, 12);
 	CREATE_PROP(ren, "assets/house.spt", 20, 6);

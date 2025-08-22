@@ -1,19 +1,22 @@
 #pragma once
 
 #include <chrono>
+#include "Application.h"
 
 namespace Lintel {
 
 	class Time
 	{
 	public:
-		static float deltaTime;		// Time since last frame
-		static float clockTime;		// Time since game start
-
-		static void Update();		// Recalculate deltaTime
+		static float DeltaTime;		// Time since last frame
+		static float ClockTime;		// Time since game start
 
 	private:
-		static std::chrono::steady_clock::time_point startTime;
-		static std::chrono::steady_clock::time_point lastTime;
+		static void Update();		// Recalculate each member
+		static std::chrono::steady_clock::time_point m_ClockStartTime;
+		static std::chrono::steady_clock::time_point m_LastFrameTime;
+
+		// Allow only this function to call Time::Update(), so the user can't mess with DeltaTime
+		friend void Application::Run();
 	};
 }

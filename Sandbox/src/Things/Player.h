@@ -21,27 +21,27 @@ public:
 
 	void Setup() override
 	{
-		spriteFilePath = "assets/human.spt";
-		initPos({ 5.0f, 2.0f });
-		spriteCenter = { 1, 1 };
+		InitSprite("assets/human.spt");
+		InitPosition({ 5.0f, 2.0f });
+		InitSpriteCenter({ 1, 1 });
 	}
 
 	void Update() override
 	{
-		if (Lintel::Input::getKeyState(Lintel::K_ESCAPE).currentState)
+		if (Lintel::Input::GetKeyState(Lintel::K_ESCAPE).IsHeld)
 		{
-			renderer->QuitApp();
+			Renderer->QuitApp();
 		}
 		
-		if (Lintel::Input::getKeyState('F').justPressed)
+		if (Lintel::Input::GetKeyState('F').JustPressed)
 		{
 			if (!currentMount)
 			{
-				std::vector<TThing*> horses = renderer->getThingsWithTag("horse");
+				std::vector<TThing*> horses = Renderer->GetThingsWithTag("horse");
 				for (TThing* h : horses)
 				{
 					Horse* horse = dynamic_cast<Horse*>(h);
-					if (isIntersecting(horse))
+					if (IsIntersecting(horse))
 					{
 						horse->Ride(this);
 						currentMount = horse;
@@ -61,71 +61,71 @@ public:
 		// Movement
 		float dx=0, dy=0;
 
-		if (Lintel::Input::getKeyState('A').currentState)
+		if (Lintel::Input::GetKeyState('A').IsHeld)
 		{
-			dx -= (speed * Lintel::Time::deltaTime);
+			dx -= (speed * Lintel::Time::DeltaTime);
 		}
-		if (Lintel::Input::getKeyState('D').currentState)
+		if (Lintel::Input::GetKeyState('D').IsHeld)
 		{
-			dx += (speed * Lintel::Time::deltaTime);
+			dx += (speed * Lintel::Time::DeltaTime);
 		}
-		if (Lintel::Input::getKeyState('W').currentState)
+		if (Lintel::Input::GetKeyState('W').IsHeld)
 		{
-			dy -= (speed * Lintel::Time::deltaTime);
+			dy -= (speed * Lintel::Time::DeltaTime);
 		}
-		if (Lintel::Input::getKeyState('S').currentState)
+		if (Lintel::Input::GetKeyState('S').IsHeld)
 		{
-			dy += (speed * Lintel::Time::deltaTime);
+			dy += (speed * Lintel::Time::DeltaTime);
 		}
 
-		moveByAndCollideWith(dx, dy, "solid", true);
+		MoveByAndCollideWith(dx, dy, "solid", true);
 
-		int w = renderer->getWidth();
-		int h = renderer->getHeight();
-		if (pos.x > w) pos.x -= w + 1;
-		if (pos.y > h) pos.y -= h + 1;
-		if (pos.x < -1) pos.x += w + 1;
-		if (pos.y < -1) pos.y += h + 1;
+		int w = Renderer->GetWidth();
+		int h = Renderer->GetHeight();
+		if (Position.x > w) Position.x -= w + 1;
+		if (Position.y > h) Position.y -= h + 1;
+		if (Position.x < -1) Position.x += w + 1;
+		if (Position.y < -1) Position.y += h + 1;
 
 		// Shooting
-		Lintel::KeyState north = Lintel::Input::getKeyState('I');
-		Lintel::KeyState south = Lintel::Input::getKeyState('K');
-		Lintel::KeyState east  = Lintel::Input::getKeyState('L');
-		Lintel::KeyState west  = Lintel::Input::getKeyState('J');
+		Lintel::KeyState north = Lintel::Input::GetKeyState('I');
+		Lintel::KeyState south = Lintel::Input::GetKeyState('K');
+		Lintel::KeyState east  = Lintel::Input::GetKeyState('L');
+		Lintel::KeyState west  = Lintel::Input::GetKeyState('J');
 
 		int dir = -1;
-		if (east.justPressed)
+		if (east.JustPressed)
 		{
-			if (north.currentState)
+			if (north.IsHeld)
 				dir = 1;
-			else if (south.currentState)
+			else if (south.IsHeld)
 				dir = 7;
 			else
 				dir = 0;
 		}
-		if (north.justPressed)
+		if (north.JustPressed)
 		{
-			if (east.currentState)
+			if (east.IsHeld)
 				dir = 1;
-			else if (west.currentState)
+			else if (west.IsHeld)
 				dir = 3;
 			else
 				dir = 2;
 		}
-		if (west.justPressed)
+		if (west.JustPressed)
 		{
-			if (north.currentState)
+			if (north.IsHeld)
 				dir = 3;
-			else if (south.currentState)
+			else if (south.IsHeld)
 				dir = 5;
 			else
 				dir = 4;
 		}
-		if (south.justPressed)
+		if (south.JustPressed)
 		{
-			if (west.currentState)
+			if (west.IsHeld)
 				dir = 5;
-			else if (east.currentState)
+			else if (east.IsHeld)
 				dir = 7;
 			else
 				dir = 6;
@@ -133,7 +133,7 @@ public:
 
 		if (dir != -1)
 		{
-			renderer->createThing<Bullet>()->init(pos, dir);
+			Renderer->CreateThing<Bullet>()->init(Position, dir);
 		}
 	}
 

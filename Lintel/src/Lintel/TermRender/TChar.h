@@ -7,7 +7,7 @@
 
 namespace Lintel {
 
-	// The windows implementation only supports 8/16 colours, so we'll keep that
+	// The windows implementation only supports 16 colours, so we'll keep that
 	// limitation for the whole render pipeline
 	enum TermColour {
 		BLACK,
@@ -33,12 +33,12 @@ namespace Lintel {
 
 	struct TChar
 	{
-		TChar(char _c, TermColour _fg_col, TermColour _bg_col) : c(_c), fg_col(_fg_col), bg_col(_bg_col) {}
-		TChar() : c('a'), fg_col(WHITE), bg_col(BLACK) {}
+		TChar(char character='a', TermColour foregroundColour=WHITE, TermColour backgroundColour=BLACK)
+			: Character(character), ForegroundColour(foregroundColour), BackgroundColour(backgroundColour) {}
 
-		char c;
-		TermColour fg_col;
-		TermColour bg_col;
+		char Character;
+		TermColour ForegroundColour;
+		TermColour BackgroundColour;
 		// None of the windows grid attributes seem to work, so that's all we need
 
 #ifdef LN_PLATFORM_WINDOWS

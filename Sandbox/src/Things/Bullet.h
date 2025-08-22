@@ -16,24 +16,22 @@ public:
 
 	void Setup() override
 	{
-		spriteCenter = { 0, 0 };
-
 		// idk why this works. I can't find a proper ascii table for this encoding...?
-		Sprite()->setSpriteFromString("\x7", 1, 1, Lintel::RED, Lintel::TRANSPARENT);
+		Sprite()->SetSpriteFromString("\x7", 1, 1, Lintel::RED, Lintel::TRANSPARENT);
 	}
 
 	void Update() override
 	{
-		pos.x += xDir * speed * Lintel::Time::deltaTime;
-		pos.y += yDir * speed * Lintel::Time::deltaTime;
+		Position.x += xDir * speed * Lintel::Time::DeltaTime;
+		Position.y += yDir * speed * Lintel::Time::DeltaTime;
 
-		std::vector<TThing*> walls = renderer->getThingsWithTag("solid");
+		std::vector<TThing*> walls = Renderer->GetThingsWithTag("solid");
 
 		for (TThing* thing : walls)
 		{
-			if (isIntersecting(thing))
+			if (IsIntersecting(thing))
 			{
-				if (thing->tags.contains("shootable"))
+				if ((*thing->Tags()).contains("shootable"))
 				{
 					Enemy* e = dynamic_cast<Enemy*>(thing);
 					e->Hit(1);
@@ -45,7 +43,7 @@ public:
 		}
 
 		// Give up if we get too far away from the screen
-		if (abs(pos.x) > 300 || abs(pos.y) > 300)
+		if (abs(Position.x) > 300 || abs(Position.y) > 300)
 		{
 			QueueDelete();
 			return;
@@ -94,6 +92,6 @@ public:
 			yDir = 1;
 			break;
 		}
-		pos = { pPos.x + 2 * xDir, pPos.y + 2 * yDir };
+		Position = { pPos.x + 2 * xDir, pPos.y + 2 * yDir };
 	}
 };

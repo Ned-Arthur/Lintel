@@ -12,6 +12,7 @@
 #include <windows.h>
 
 namespace Lintel {
+	class Application;
 	// A Terminal Renderer
 	// Primarily uses ANSI escape codes to draw text to whatever terminal the
 	// user is running. While not completely universal, at least windows cmd
@@ -22,81 +23,81 @@ namespace Lintel {
 		TRen();
 		~TRen();
 
-		bool wantsToQuit = false;
+		// Static methods
+		static void GetConsoleSize(int* x, int* y);
+
+		bool WantsToQuit = false;
 
 		// Entity system (should this be here? probably not)
-		std::list<TThing*> things;
-		template <typename T> T* createThing(std::string name = "", std::unordered_set<std::string> tags = {});
-		void setupThings();
-		TThing* getThingByName(std::string name);
-		std::vector<TThing*> getThingsWithTag(std::string tag);
+		std::list<TThing*> Things;
+		template <typename T> T* CreateThing(std::string name = "", std::unordered_set<std::string> tags = {});
+		TThing* GetThingByName(std::string name);
+		std::vector<TThing*> GetThingsWithTag(std::string tag);
 
 		void QuitApp();
 
-		// Static methods
-		static void getConsoleSize(int* x, int* y);
-
 		// Setup methods
-		void setTitle(const char* termTitle);
-		void setBG(TChar bgChar);
-		void setBGSprite(std::string spritePath);
+		void SetTitle(const char* termTitle);
+		void SetBackgroundCharacter(TChar bgChar);
+		void SetBackgroundSprite(std::string spritePath);
 
+		int GetWidth() { return m_Width; }
+		int GetHeight() { return m_Height; }
+
+		// Drawing methods
+		void FillBufferWithCharacter(TChar blankChar);
+		void DrawString(const char* message, TChar templateCharacter, int32_t x, int32_t y);
+		void DrawString(const char* message, TermColour foregroundColour, TermColour backgroundColour, int32_t x, int32_t y);
+		void DrawSprite(TSprite sprite, int32_t x, int32_t y);
+		void DrawCharacter(TChar character, int32_t x, int32_t y);
+
+	private:
+		void DrawCharacterUnsafe(TChar character, int32_t x, int32_t y);
+		
+		// Doesn't actually resize the window, but the virtual drawing space
+		// The user should not use this, because it will just act weird and not
+		// actually "resize" the window
+		void ResizeBuffer(int w, int h);
+		void SetupThings();
 		// Non-drawing loop methods
 		void GatherInput();
 		void UpdateAndDraw();
 
-		int getWidth() { return width; }
-		int getHeight() { return height; }
+		int m_Width;
+		int m_Height;
 
-		// Drawing methods
-		void flushBuffer(TChar blankChar);
-		void drawMsg(const char* msg, TChar temp, int x, int y);
-		void drawMsg(const char* msg, TermColour fgColour, TermColour bgColour, int x, int y);
-		void drawSprite(TSprite sprite, int x, int y);
-		void drawChar(TChar c, int x, int y);
+		TChar* m_ScreenBuffer;
 
-	private:
-		void drawCharUnsafe(TChar sourceChar, int x, int y);
-		
-		// Doesn't actually resize the window, but the virtual drawing space
-		// The user should use this, because it will just act weird and not
-		// actually "resize" the window
-		void resize(int w, int h);
+		bool m_UsingBackgroundSprite;
+		TChar m_BackgroundCharacter;
+		TSprite m_BackgroundSprite;
 
-		int width;
-		int height;
-
-		TChar* screenBuffer;
-
-		bool usingSprite;
-		TChar backgroundChar;
-		TSprite backgroundSprite;
-
-		bool isSetup = false;
+		bool m_ThingsAreSetup = false;
 
 		// Platform specific implementation data
 	#ifdef LN_PLATFORM_WINDOWS
-		CHAR_INFO* win_screenBuffer;
-		HANDLE wHnd;				// Handle for window writing
-		HANDLE rHnd;				// Handle for window reading
-		SMALL_RECT srctWriteRect;
-		COORD coordBufSize;
-		COORD coordBufCoord;
-		CONSOLE_CURSOR_INFO oldCI;	// To restore the console after closing
+		CHAR_INFO* m_WindowsScreenBuffer;
+		HANDLE m_wHnd;				// Handle for window writing
+		HANDLE m_rHnd;				// Handle for window reading
+		SMALL_RECT m_srctWriteRect;
+		COORD m_coordBufSize;
+		COORD m_coordBufCoord;
+		CONSOLE_CURSOR_INFO m_oldCI;	// To restore the console after closing
 	#endif
+
+		friend Application;
 	};
 
 
 	template<typename T>
-	inline T* TRen::createThing(std::string name, std::unordered_set<std::string> tags)
+	inline T* TRen::CreateThing(std::string name, std::unordered_set<std::string> tags)
 	{
 		T* newThing = new T(this, name, tags);
-		things.push_back(newThing);
+		Things.push_back(newThing);
 
-		if (isSetup)
+		if (m_ThingsAreSetup)
 		{
-			newThing->genericSetup();
-			newThing->LateSetup();
+			newThing->Setup();
 		}
 
 		return newThing;

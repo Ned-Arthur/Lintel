@@ -2,18 +2,21 @@
 
 namespace Lintel {
 
-	float Time::deltaTime = 0;
-	float Time::clockTime = 0;
-	std::chrono::steady_clock::time_point Time::startTime = std::chrono::steady_clock::now();
-	std::chrono::steady_clock::time_point Time::lastTime = std::chrono::steady_clock::now();
+	// Initialise static members
+	float Time::DeltaTime = 0;
+	float Time::ClockTime = 0;
+	std::chrono::steady_clock::time_point Time::m_ClockStartTime = std::chrono::steady_clock::now();
+	std::chrono::steady_clock::time_point Time::m_LastFrameTime = std::chrono::steady_clock::now();
 
 	void Time::Update()
 	{
 		auto currentTime = std::chrono::steady_clock::now();
 
-		deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
-		lastTime = currentTime;
+		// Calculate DeltaTime
+		DeltaTime = std::chrono::duration<float>(currentTime - m_LastFrameTime).count();
+		m_LastFrameTime = currentTime;
 
-		clockTime = std::chrono::duration<float>(currentTime - startTime).count();
+		// Update ClockTime
+		ClockTime = std::chrono::duration<float>(currentTime - m_ClockStartTime).count();
 	}
 }

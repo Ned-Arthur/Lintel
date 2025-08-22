@@ -20,50 +20,51 @@ namespace Lintel {
 	class TThing
 	{
 	public:
-		TThing(TRen* _renderer, std::string _name, std::unordered_set<std::string> _tags);
+		TThing(TRen* renderer, std::string name, std::unordered_set<std::string> tags);
 
 		/* Overridable functions for app - space control */
-		void genericSetup();
-		// Set spriteFilePath, other members, and get references to other things
-		// Named things exist here, but aren't guaranteed to have values
 		virtual void Setup() = 0;
-		// Optional setup based on values from other Things. All Setup has been
-		// completed when this is called
-		virtual void LateSetup() {}
-		// Called every frame, take input and do movement
 		virtual void Update() = 0;
-		
-		/* Pseudo - protected members, but need to access from other Things */
-		std::string name;						// Unique identification for other Things
-		std::unordered_set<std::string> tags;	// Generic ID shared among many Things
-		TVec<float> pos = { 0,0 };				// Position on the screen
-		TVec<int> spriteCenter = { 0,0 };		// Position in sprite coordinates that pos represents in screen-space
-		bool visible = true;					// Do we draw the sprite?
 
-		// Initialise the position once, any extra calls will be ignored
-		void initPos(TVec<float> startPos);
-		void initSpriteFP(const char* filePath);
+		// Initialise fields once and only once
+		void InitPosition(TVec<float> startPos);
+		void InitSprite(const char* filePath);
+		void InitSpriteCenter(TVec<int> _spriteCenter);
+
+		void SetVisibility(bool visibility);
+
+		std::string Name() { return m_Name; }
+		std::unordered_set<std::string>* Tags() { return &m_Tags; }
+		TSprite* Sprite() { return &m_Sprite; }
 
 		void QueueDelete();
 		bool MarkedForDeletion();
 
-		/* Helper functions for intersections etc. */
-		bool isIntersecting(TThing* other);
-		int getBound(EdgeDirection dir);
-		bool moveByAndCollideWith(float dx, float dy, std::string solidTag, bool collideWithScreenEdges=false);
+		/* Physics */
+		bool IsIntersecting(TThing* other);
+		bool MoveByAndCollideWith(float dx, float dy, std::string solidTag, bool collideWithScreenEdges=false);
 
-		TSprite* Sprite();
-
-		const char* spriteFilePath = "NONE";	// Which sprite to load after setup
-		TRen* renderer;							// Pointer to the renderer for sprite drawing
-
-		// This is only called by the engine
-		void Draw();
+		TRen* Renderer;		// The renderer which owns this TThing
+		TVec<float> Position = { 0, 0 };	// Position on the screen
 
 	private:
-		TSprite sprite;
-		bool posInitialised = false;
-		bool spriteInitialised = false;
-		bool shouldDelete = false;
+		void Draw();
+
+		int GetBound(EdgeDirection dir);
+
+		TSprite m_Sprite;
+		std::string m_Name;						// Unique identification for other Things
+		std::unordered_set<std::string> m_Tags;	// Generic ID shared among many Things
+		TVec<int> m_SpriteCenter = { 0, 0 };		// Position in sprite coordinates that Position represents in screen-space
+
+		bool m_Visible = true;
+		bool m_FlaggedForDeletion = false;
+
+		// Initialisation flags
+		bool m_PositionInitialised = false;
+		bool m_SpriteInitialised = false;
+		bool m_SpriteCenterInitialised = false;
+
+		friend TRen;
 	};
 }

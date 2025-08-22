@@ -52,93 +52,92 @@ namespace Lintel {
 	CHAR_INFO TChar::Translate_Win()
 	{
 		CHAR_INFO ret;
-		ret.Char.AsciiChar = c;
-		ret.Attributes = TCTransFG_Win[fg_col] | TCTransBG_Win[bg_col];
+		ret.Char.AsciiChar = Character;
+		ret.Attributes = TCTransFG_Win[ForegroundColour] | TCTransBG_Win[BackgroundColour];
 		return ret;
 	}
 #endif
 
 	TRen::TRen()
 	{
-		getConsoleSize(&width, &height);
-		screenBuffer = new TChar[width * height];
+		GetConsoleSize(&m_Width, &m_Height);
+		m_ScreenBuffer = new TChar[m_Width * m_Height];
 
 	#ifdef LN_PLATFORM_WINDOWS
-		win_screenBuffer = new CHAR_INFO[width * height];
+		m_WindowsScreenBuffer = new CHAR_INFO[m_Width * m_Height];
 
-		wHnd = GetStdHandle(STD_OUTPUT_HANDLE);
-		rHnd = GetStdHandle(STD_INPUT_HANDLE);
+		m_wHnd = GetStdHandle(STD_OUTPUT_HANDLE);
+		m_rHnd = GetStdHandle(STD_INPUT_HANDLE);
 
-		coordBufCoord.X = 0;
-		coordBufCoord.Y = 0;
+		m_coordBufCoord.X = 0;
+		m_coordBufCoord.Y = 0;
 
-		coordBufSize.Y = height;
-		coordBufSize.X = width;
+		m_coordBufSize.Y = m_Height;
+		m_coordBufSize.X = m_Width;
 
-		srctWriteRect.Top = 0;
-		srctWriteRect.Left = 0;
-		srctWriteRect.Bottom = height;
-		srctWriteRect.Right = width;
+		m_srctWriteRect.Top = 0;
+		m_srctWriteRect.Left = 0;
+		m_srctWriteRect.Bottom = m_Height;
+		m_srctWriteRect.Right = m_Width;
 
-		GetConsoleCursorInfo(wHnd, &oldCI);
-		CONSOLE_CURSOR_INFO ci = oldCI;
+		GetConsoleCursorInfo(m_wHnd, &m_oldCI);
+		CONSOLE_CURSOR_INFO ci = m_oldCI;
 		ci.bVisible = FALSE;
-		SetConsoleCursorInfo(wHnd, &ci);
+		SetConsoleCursorInfo(m_wHnd, &ci);
 
 	#endif
 	}
+
 	TRen::~TRen()
 	{
 		// Free all the memory for our TThing s
-		for (auto const& i : things)
+		for (auto const& thing : Things)
 		{
-			delete i;
+			delete thing;
 		}
-		things.clear();
+		Things.clear();
 
-		delete[] screenBuffer;
+		delete[] m_ScreenBuffer;
 
 	#ifdef LN_PLATFORM_WINDOWS
-		delete[] win_screenBuffer;
+		delete[] m_WindowsScreenBuffer;
 
-		//TODO tidy up the console
-		SetConsoleCursorInfo(wHnd, &oldCI);
+		// Revert the console settings so it can be used as normal after being closed
+		// TODO? Clear the console graphics as well
+		SetConsoleCursorInfo(m_wHnd, &m_oldCI);
 	#endif
 	}
 
 /*********** Entity System ***********/
-	void TRen::setupThings()
+	void TRen::SetupThings()
 	{
-		for (auto const& thing : things)
+		for (auto const& thing : Things)
 		{
-			thing->genericSetup();
+			thing->Setup();
 		}
 
-		for (auto const& thing : things)
-		{
-			thing->LateSetup();
-		}
-
-		isSetup = true;
+		m_ThingsAreSetup = true;
 	}
-	TThing* TRen::getThingByName(std::string name)
+
+	TThing* TRen::GetThingByName(std::string name)
 	{
-		for (auto const& thing : things)
+		for (auto const& thing : Things)
 		{
-			if (thing->name == name)
+			if (thing->Name() == name)
 			{
 				return thing;
 			}
 		}
 		return nullptr;
 	}
-	std::vector<TThing*> TRen::getThingsWithTag(std::string tag)
+
+	std::vector<TThing*> TRen::GetThingsWithTag(std::string tag)
 	{
 		std::vector<TThing*> foundThings;
 		
-		for (auto const& thing : things)
+		for (auto const& thing : Things)
 		{
-			if (thing->tags.contains(tag))
+			if (thing->m_Tags.contains(tag))
 			{
 				foundThings.push_back(thing);
 			}
@@ -149,12 +148,12 @@ namespace Lintel {
 
 	void TRen::QuitApp()
 	{
-		wantsToQuit = true;
+		WantsToQuit = true;
 	}
 
 	
 /*********** Static Methods ***********/
-	void TRen::getConsoleSize(int* columns, int* rows)
+	void TRen::GetConsoleSize(int* columns, int* rows)
 	{
 	#ifdef LN_PLATFORM_WINDOWS
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
@@ -166,7 +165,7 @@ namespace Lintel {
 
 
 /*********** Setup ***********/
-	void TRen::setTitle(const char* termTitle)
+	void TRen::SetTitle(const char* termTitle)
 	{
 	#ifdef LN_PLATFORM_WINDOWS
 		// Be naughty and use the ANSI function so we don't need to do a conversion
@@ -174,16 +173,16 @@ namespace Lintel {
 	#endif
 	}
 
-	void TRen::setBG(TChar bgChar)
+	void TRen::SetBackgroundCharacter(TChar bgChar)
 	{
-		backgroundChar = bgChar;
-		usingSprite = false;
+		m_BackgroundCharacter = bgChar;
+		m_UsingBackgroundSprite = false;
 	}
 
-	void TRen::setBGSprite(std::string spritePath)
+	void TRen::SetBackgroundSprite(std::string spritePath)
 	{
-		backgroundSprite.loadSprite(spritePath.c_str());
-		usingSprite = true;
+		m_BackgroundSprite.SetSpriteFromFile(spritePath.c_str());
+		m_UsingBackgroundSprite = true;
 	}
 
 
@@ -194,11 +193,11 @@ namespace Lintel {
 		// Handle (console) window events
 		DWORD numEvents = 0;
 		DWORD numEventsRead = 0;
-		GetNumberOfConsoleInputEvents(rHnd, &numEvents);
+		GetNumberOfConsoleInputEvents(m_rHnd, &numEvents);
 		if (numEvents != 0)
 		{
 			INPUT_RECORD* eventBuffer = new INPUT_RECORD[numEvents];
-			ReadConsoleInput(rHnd, eventBuffer, numEvents, &numEventsRead);
+			ReadConsoleInput(m_rHnd, eventBuffer, numEvents, &numEventsRead);
 
 			for (DWORD i = 0; i < numEventsRead; ++i)
 			{
@@ -207,18 +206,18 @@ namespace Lintel {
 				case KEY_EVENT:
 					switch (eventBuffer[i].Event.KeyEvent.wVirtualKeyCode) {
 					case VK_ESCAPE:
-						Input::setKeyState(K_ESCAPE, eventBuffer[i].Event.KeyEvent.bKeyDown);
+						Input::SetKeyState(K_ESCAPE, eventBuffer[i].Event.KeyEvent.bKeyDown);
 
 						break;
 					}
 
-					Input::setKeyState(eventBuffer[i].Event.KeyEvent.uChar.AsciiChar, eventBuffer[i].Event.KeyEvent.bKeyDown);
+					Input::SetKeyState(eventBuffer[i].Event.KeyEvent.uChar.AsciiChar, eventBuffer[i].Event.KeyEvent.bKeyDown);
 
 					break;
 				case WINDOW_BUFFER_SIZE_EVENT:
 					COORD newSize = eventBuffer[i].Event.WindowBufferSizeEvent.dwSize;
 					// Update all our variables to store & draw at the right sizes
-					resize(newSize.X, newSize.Y);
+					ResizeBuffer(newSize.X, newSize.Y);
 				}
 			}
 
@@ -230,39 +229,39 @@ namespace Lintel {
 	void TRen::UpdateAndDraw()
 	{
 		// Clear the background
-		if (usingSprite)
+		if (m_UsingBackgroundSprite)
 		{
 			// integer division floors, but we'd rather draw extra background outside
 			// the window over blank edges
-			int repeatX = width / backgroundSprite.getWidth() + 1;
-			int repeatY = height / backgroundSprite.getHeight() + 1;
+			int repeatX = m_Width / m_BackgroundSprite.GetWidth() + 1;
+			int repeatY = m_Height / m_BackgroundSprite.GetHeight() + 1;
 
 			for (int i = 0; i < repeatX; i++)
 			{
 				for (int j = 0; j < repeatY; j++)
 				{
-					drawSprite(backgroundSprite,
-						i * backgroundSprite.getWidth(),
-						j * backgroundSprite.getHeight()
+					DrawSprite(m_BackgroundSprite,
+						i * m_BackgroundSprite.GetWidth(),
+						j * m_BackgroundSprite.GetHeight()
 					);
 				}
 			}
 		}
 		else
 		{
-			flushBuffer(backgroundChar);
+			FillBufferWithCharacter(m_BackgroundCharacter);
 		}
 
 		// Update all our TThings and delete those we don't need
-		std::list<TThing*>::iterator iter = things.begin();
+		std::list<TThing*>::iterator iter = Things.begin();
 
-		while (iter != things.end())
+		while (iter != Things.end())
 		{
 			(*iter)->Update();
 
 			if ((*iter)->MarkedForDeletion())
 			{
-				iter = things.erase(iter);
+				iter = Things.erase(iter);
 			}
 			else
 			{
@@ -270,7 +269,7 @@ namespace Lintel {
 			}
 		}
 
-		for (auto const& thing : things)
+		for (auto const& thing : Things)
 		{
 			thing->Draw();
 		}
@@ -278,53 +277,53 @@ namespace Lintel {
 		// Draw the character buffer to the console
 	#ifdef LN_PLATFORM_WINDOWS
 		// Translate the platform-independent buffer to something windows understands
-		for (int i = 0; i < width * height; i++)
+		for (int i = 0; i < m_Width * m_Height; i++)
 		{
-			win_screenBuffer[i] = screenBuffer[i].Translate_Win();
+			m_WindowsScreenBuffer[i] = m_ScreenBuffer[i].Translate_Win();
 		}
 		
 		// Use ANSI method so we don't have to deal with conversion bs and can
 		// just use ASCII/ANSI chars in App and maintain cross-platform-ness
 		WriteConsoleOutputA(
-			wHnd,
-			win_screenBuffer,
-			coordBufSize,
-			coordBufCoord,
-			&srctWriteRect);
+			m_wHnd,
+			m_WindowsScreenBuffer,
+			m_coordBufSize,
+			m_coordBufCoord,
+			&m_srctWriteRect);
 	#endif
 	}
 
 
 /*********** Drawing Methods ***********/
-	void TRen::flushBuffer(TChar blankChar)
+	void TRen::FillBufferWithCharacter(TChar blankChar)
 	{
-		for (int i = 0; i < width * height; i++)
+		for (int i = 0; i < m_Width * m_Height; i++)
 		{
-			screenBuffer[i] = blankChar;
+			m_ScreenBuffer[i] = blankChar;
 		}
 	}
 
-	void TRen::drawMsg(const char* msg, TChar temp, int x, int y)
+	void TRen::DrawString(const char* message, TChar templateCharacter, int32_t x, int32_t y)
 	{
-		for (int i = 0; i < strlen(msg); i++)
+		for (int i = 0; i < strlen(message); i++)
 		{
-			temp.c = msg[i];
-			drawChar(temp, x + i, y);
+			templateCharacter.Character = message[i];
+			DrawCharacter(templateCharacter, x + i, y);
 		}
 	}
-	void TRen::drawMsg(const char* msg, TermColour fgColour, TermColour bgColour, int x, int y)
+	void TRen::DrawString(const char* message, TermColour foregroundColour, TermColour backgroundColour, int32_t x, int32_t y)
 	{
-		for (int i = 0; i < strlen(msg); i++)
+		for (int i = 0; i < strlen(message); i++)
 		{
-			drawChar(TChar(msg[i], fgColour, bgColour), x + i, y);
+			DrawCharacter(TChar(message[i], foregroundColour, backgroundColour), x + i, y);
 		}
 	}
 
-	void TRen::drawSprite(TSprite sprite, int x, int y)
+	void TRen::DrawSprite(TSprite sprite, int32_t x, int32_t y)
 	{
 		// Check the bounds first so we can avoid bounds-checking every char
-		int w = sprite.getWidth();
-		int h = sprite.getHeight();
+		int w = sprite.GetWidth();
+		int h = sprite.GetHeight();
 
 		int wStart = 0;
 		int hStart = 0;
@@ -334,56 +333,55 @@ namespace Lintel {
 			wStart -= x;
 		if (y < 0)
 			hStart -= y;
-		if (x + w > width)
-			w -= (x + w) - width;
-		if (y + h > height)
-			h -= (y + h) - height;
+		if (x + w > m_Width)
+			w -= (x + w) - m_Width;
+		if (y + h > m_Height)
+			h -= (y + h) - m_Height;
 		
 		for (int i = wStart; i < w; i++)
 		{
 			for (int j = hStart; j < h; j++)
 			{
 				// Get the char we're about to draw over
-				TChar underneath = screenBuffer[(x + i) + (y + j) * width];
+				TChar underneath = m_ScreenBuffer[(x + i) + (y + j) * m_Width];
 
-				drawCharUnsafe(sprite.getCharAtPosition(i, j, underneath), x + i, y + j);
+				DrawCharacterUnsafe(sprite.GetCharacterAtPosition(i, j, underneath), x + i, y + j);
 			}
 		}
 	}
 
-	void TRen::drawChar(TChar sourceChar, int x, int y)
+	void TRen::DrawCharacter(TChar character, int32_t x, int32_t y)
 	{
-		if (x >= width || y >= height || x < 0 || y < 0)
+		if (x >= m_Width || y >= m_Height || x < 0 || y < 0)
 		{
-			//exit(99);	// If we're trying to 'optimise' drawing we can crash on using this
 			return;
 		}
 
-		drawCharUnsafe(sourceChar, x, y);
+		DrawCharacterUnsafe(character, x, y);
 	}
-	void TRen::drawCharUnsafe(TChar sourceChar, int x, int y)
+	void TRen::DrawCharacterUnsafe(TChar character, int32_t x, int32_t y)
 	{
-		screenBuffer[y * width + x] = sourceChar;
+		m_ScreenBuffer[y * m_Width + x] = character;
 	}
 
 /*********** Private Control ***********/
-	void TRen::resize(int w, int h)
+	void TRen::ResizeBuffer(int w, int h)
 	{
-		width = w;
-		height = h;
+		m_Width = w;
+		m_Height = h;
 
-		delete[] screenBuffer;
-		screenBuffer = new TChar[width * height];
+		delete[] m_ScreenBuffer;
+		m_ScreenBuffer = new TChar[m_Width * m_Height];
 
 #ifdef LN_PLATFORM_WINDOWS
-		delete[] win_screenBuffer;
-		win_screenBuffer = new CHAR_INFO[width * height];
+		delete[] m_WindowsScreenBuffer;
+		m_WindowsScreenBuffer = new CHAR_INFO[m_Width * m_Height];
 
-		coordBufSize.Y = height;
-		coordBufSize.X = width;
+		m_coordBufSize.Y = m_Height;
+		m_coordBufSize.X = m_Width;
 
-		srctWriteRect.Bottom = height;
-		srctWriteRect.Right = width;
+		m_srctWriteRect.Bottom = m_Height;
+		m_srctWriteRect.Right = m_Width;
 #endif
 	}
 }
