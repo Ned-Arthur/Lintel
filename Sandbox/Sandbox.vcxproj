@@ -95,7 +95,7 @@
   <ItemGroup>
     <ClInclude Include="src\Things\Bullet.h" />
     <ClInclude Include="src\Things\Enemy.h" />
-    <ClInclude Include="src\Things\Horse.h" />
+    <ClInclude Include="src\Things\Message.h" />
     <ClInclude Include="src\Things\Player.h" />
   </ItemGroup>
   <ItemGroup>

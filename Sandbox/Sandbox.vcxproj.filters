@@ -12,7 +12,7 @@
     <ClInclude Include="src\Things\Enemy.h">
       <Filter>Things</Filter>
     </ClInclude>
-    <ClInclude Include="src\Things\Horse.h">
+    <ClInclude Include="src\Things\Message.h">
       <Filter>Things</Filter>
     </ClInclude>
     <ClInclude Include="src\Things\Player.h">
